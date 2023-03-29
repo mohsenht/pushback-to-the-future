@@ -5,7 +5,7 @@ from datetime import timedelta
 from loader.DataLoader import DataLoader
 
 
-class PushbackMeanLoader(DataLoader):
+class ArrivalToGateTimeWeightedMeanLoader(DataLoader):
     def __init__(self, file_path_runway, file_path_standtimes):
         self.runways = pd.read_csv(
             file_path_runway,
@@ -27,6 +27,6 @@ class PushbackMeanLoader(DataLoader):
                  - merged_standtimes_runways['arrival_runway_actual_time']
                  ).dt.total_seconds() / 60)
         diff_stand_runway = merged_standtimes_runways[merged_standtimes_runways['diff_stand_runway'] >= 0]
-        ewm = pd.Series(diff_stand_runway['diff_stand_runway']).mean() # todo convert this mean to EMA
+        ewm = pd.Series(diff_stand_runway['diff_stand_runway']).ewm(span=2).mean().iloc[-1]
         data['mean_runway_pushback'] = ewm
         return data

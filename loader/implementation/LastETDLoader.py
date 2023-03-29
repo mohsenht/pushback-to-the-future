@@ -5,7 +5,7 @@ from datetime import timedelta
 from loader.DataLoader import DataLoader
 
 
-class ETDLoader(DataLoader):
+class LastETDLoader(DataLoader):
     def __init__(self, file_path):
         self.etd = pd.read_csv(
             file_path,
@@ -18,9 +18,6 @@ class ETDLoader(DataLoader):
         departure_runway_estimated_time = data.merge(
             latest_now_etd, how="left", on="gufi"
         ).departure_runway_estimated_time
-        data["etd"] = \
-            ((departure_runway_estimated_time - now).dt.total_seconds() / 60)
-        data["etd"] = data.etd.clip(
-            lower=0
-        ).astype(int)
+        data["last_etd"] = (departure_runway_estimated_time - now).dt.total_seconds() / 60
+        data["last_etd"] = data.last_etd.clip(lower=0).astype(int)
         return data
