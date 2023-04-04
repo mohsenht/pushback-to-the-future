@@ -15,12 +15,9 @@ class WeightedETDLoader(DataLoader):
     def load_data(self, now: Timestamp, data: DataFrame) -> DataFrame:
         now_etd = self.etd.loc[(self.etd.timestamp > now - timedelta(hours=30)) & (self.etd.timestamp <= now)]
         now_etd.loc[:, 'w_etd'] = (now_etd['departure_runway_estimated_time'] - now).dt.total_seconds()
-        latest_now_etd = now_etd.groupby("gufi")['w_etd'].ewm(span=5).mean()
+        latest_now_etd = now_etd.groupby("gufi")['w_etd'].ewm(span=2).mean()
         etd = data.merge(
             latest_now_etd, how="left", on="gufi"
         ).w_etd
         data["w_etd"] = etd / 60
-        data["w_etd"] = data.w_etd.clip(
-            lower=0
-        ).astype(int)
         return data

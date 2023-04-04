@@ -15,6 +15,6 @@ class DataGatherer(DataLoader):
             data.timestamp == now
             ].reset_index(drop=True)
         for loader in self.data_loaders:
-            loader.load_data(now, now_data)
+            now_data = loader.load_data(now, now_data)
 
         return now_data
