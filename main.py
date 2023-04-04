@@ -70,9 +70,6 @@ def run_algorithm():
 
     x_train, x_test, y_train, y_test = train_test_split(data.iloc[:, 4:], data.iloc[:, 3], test_size=0.2)
 
-    train_data = xgb.DMatrix(x_train, label=y_train)
-    test_data = xgb.DMatrix(x_test, label=y_test)
-
     params = {
         'objective': 'reg:squarederror',
         'learning_rate': 0.1,

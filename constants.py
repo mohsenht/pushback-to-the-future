@@ -29,6 +29,6 @@ mfs_column_flight_type = "flight_type"
 runways_column_departure_runways = "departure_runways"
 runways_column_arrival_runways = "arrival_runways"
 
-model_type_path = "data\\model\\KCLT\\types.json"
+model_type_path = f"data{separator}model{separator}KCLT{separator}types.json"
 
 
