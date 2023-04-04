@@ -3,13 +3,14 @@ import pandas as pd
 
 from clean.extract.TypeContainer import TypeContainer
 from constants import mfs_column_aircraft_type, mfs_column_major_carrier, mfs_column_aircraft_engine_class, \
-    mfs_column_flight_type
+    mfs_column_flight_type, file_name_mfs
 from loader.DataLoader import DataLoader
+from path_generator import path_generator
 
 
 class AircraftInfoLoader(DataLoader):
-    def __init__(self, file_path, type_file_path):
-        self.mfs = pd.read_csv(file_path)
+    def __init__(self, airport, type_file_path):
+        self.mfs = pd.read_csv(path_generator(airport, file_name_mfs),)
         self.container = TypeContainer.from_file(type_file_path)
 
     def load_data(self, now: Timestamp, data: DataFrame) -> DataFrame:

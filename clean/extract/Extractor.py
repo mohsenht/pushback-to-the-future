@@ -1,6 +1,6 @@
 from clean.extract.TypeContainer import TypeContainer
 from clean.extract.TypeExtractor import TypeExtractor
-from constants import file_name_mfs, file_name_config, runways_column_departure_runways, runways_column_arrival_runways
+from constants import separator, file_name_mfs, file_name_config, runways_column_departure_runways, runways_column_arrival_runways
 
 
 class Extractor:
@@ -32,4 +32,4 @@ class Extractor:
             self.extract_runways()
         )
 
-        container.to_json_file(f"data\\model\\{self.airport_name}\\types.json")
+        container.to_json_file(f"data{separator}model{separator}{self.airport_name}{separator}types.json")

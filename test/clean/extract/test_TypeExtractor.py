@@ -1,13 +1,14 @@
 from unittest import TestCase
 
 from clean.extract.TypeExtractor import TypeExtractor
+from main import separator
 
 
 class TestTypeExtractor(TestCase):
     def test_load_data(self):
         expected_aircrafts = ["F900", "A321", "B738", "nan"]
         airport_name = "KCLT"
-        file_path = "data\\"
+        file_path = f"data{separator}"
         file_name = "mfs"
         type_name = "aircraft"
         column_name = "aircraft_type"

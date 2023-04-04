@@ -2,13 +2,15 @@ from pandas import DataFrame, Timestamp
 import pandas as pd
 from datetime import timedelta
 
+from constants import file_name_lamp
 from loader.DataLoader import DataLoader
+from path_generator import path_generator
 
 
 class LastWeatherLoader(DataLoader):
-    def __init__(self, file_path):
+    def __init__(self, airport):
         self.weather = pd.read_csv(
-            file_path,
+            path_generator(airport, file_name_lamp),
             parse_dates=["forecast_timestamp", "timestamp"],
         ).sort_values("timestamp")
 

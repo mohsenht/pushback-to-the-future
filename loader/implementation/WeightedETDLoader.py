@@ -2,13 +2,15 @@ from pandas import DataFrame, Timestamp
 import pandas as pd
 from datetime import timedelta
 
+from constants import file_name_etd
 from loader.DataLoader import DataLoader
+from path_generator import path_generator
 
 
 class WeightedETDLoader(DataLoader):
-    def __init__(self, file_path):
+    def __init__(self, airport):
         self.etd = pd.read_csv(
-            file_path,
+            path_generator(airport, file_name_etd),
             parse_dates=["departure_runway_estimated_time", "timestamp"],
         ).sort_values("timestamp")
 

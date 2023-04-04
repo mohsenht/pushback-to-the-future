@@ -2,17 +2,19 @@ from pandas import DataFrame, Timestamp
 import pandas as pd
 from datetime import timedelta
 
+from constants import file_name_runways, file_name_standtimes
 from loader.DataLoader import DataLoader
+from path_generator import path_generator
 
 
 class ArrivalToGateTimeWeightedMeanLoader(DataLoader):
-    def __init__(self, file_path_runway, file_path_standtimes):
+    def __init__(self, airport):
         self.runways = pd.read_csv(
-            file_path_runway,
+            path_generator(airport, file_name_runways),
             parse_dates=["arrival_runway_actual_time", "timestamp"],
         ).sort_values("timestamp")
         self.standtimes = pd.read_csv(
-            file_path_standtimes,
+            path_generator(airport, file_name_standtimes),
             parse_dates=["arrival_stand_actual_time", "timestamp"],
         ).sort_values("timestamp")
 

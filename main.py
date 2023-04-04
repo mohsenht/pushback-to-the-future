@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
 
 from clean.extract.Extractor import Extractor
-from constants import model_type_path
+from constants import model_type_path, file_name_results, file_name_labels
 from loader.implementation.AircraftInfoLoader import AircraftInfoLoader
 from loader.implementation.BusyETDLoader import BusyETDLoader
 from loader.implementation.DataGatherer import DataGatherer
@@ -17,42 +17,27 @@ from loader.implementation.LastWeatherLoader import LastWeatherLoader
 from loader.implementation.RunningRunwayInfoLoader import RunningRunwayInfoLoader
 from loader.implementation.RunwayETDMeanLoader import RunwayETDMeanLoader
 from loader.implementation.WeightedETDLoader import WeightedETDLoader
-
-separator = os.path.sep
-etd_path = f"data{separator}etd_2_weeks.csv"
-runways_path = f"data{separator}runways_2_weeks.csv"
-standtimes_path = f"data{separator}standtimes_2_weeks.csv"
-lamp_path = f"data{separator}lamp_2_weeks.csv"
-config_path = f"data{separator}config_2_weeks.csv"
-mfs_path = f"data{separator}KCLT_mfs.csv"
-labels_path = f"data{separator}labels_2_weeks.csv"
-results_path = f"data{separator}results_2_weeks.csv"
-
-# etd_path = f"data{separator}KCLT_etd.csv"
-# runways_path = f"data{separator}KCLT_runways.csv"
-# standtimes_path = f"data{separator}KCLT_standtimes.csv"
-# lamp_path = f"data{separator}KCLT_lamp.csv"
-# labels_path = f"data{separator}train_labels_KCLT.csv"
-# results_path = f"data{separator}results_KCLT.csv"
+from path_generator import path_generator, labels_path_generator
 
 number_of_processors = 10
+airport = "KCLT"
 
 
 def gather_features():
     data_gatherer = DataGatherer()
-    data_gatherer.add_feature(LastETDLoader(etd_path))
-    data_gatherer.add_feature(WeightedETDLoader(etd_path))
-    data_gatherer.add_feature(LastTwoETDLoader(etd_path))
-    data_gatherer.add_feature(BusyETDLoader(etd_path))
-    data_gatherer.add_feature(ArrivalToGateTimeWeightedMeanLoader(runways_path, standtimes_path))
-    data_gatherer.add_feature(LastWeatherLoader(lamp_path))
-    data_gatherer.add_feature(RunningRunwayInfoLoader(config_path, model_type_path))
-    data_gatherer.add_feature(AircraftInfoLoader(mfs_path, model_type_path))
+    data_gatherer.add_feature(LastETDLoader(airport))
+    data_gatherer.add_feature(WeightedETDLoader(airport))
+    data_gatherer.add_feature(LastTwoETDLoader(airport))
+    data_gatherer.add_feature(BusyETDLoader(airport))
+    data_gatherer.add_feature(ArrivalToGateTimeWeightedMeanLoader(airport))
+    data_gatherer.add_feature(LastWeatherLoader(airport))
+    data_gatherer.add_feature(RunningRunwayInfoLoader(airport, model_type_path))
+    data_gatherer.add_feature(AircraftInfoLoader(airport, model_type_path))
     # data_gatherer.add_feature(RunwayETDMeanLoader(runways_path, etd_path))
 
-    submission_format = pd.read_csv(labels_path, parse_dates=["timestamp"]).sort_values("timestamp")
+    submission_format = pd.read_csv(labels_path_generator(airport), parse_dates=["timestamp"]).sort_values("timestamp")
     airport_submission_format = submission_format.loc[
-        submission_format.airport == 'KCLT'
+        submission_format.airport == airport
         ]
     timestamps = pd.to_datetime(airport_submission_format.timestamp.unique())
 
@@ -62,11 +47,11 @@ def gather_features():
     pool.join()
 
     results = pd.concat(results, ignore_index=True)
-    results.to_csv(results_path, index=False)
+    results.to_csv(path_generator(airport, file_name_results), index=False)
 
 
 def run_algorithm():
-    data = pd.read_csv(results_path)
+    data = pd.read_csv(path_generator(airport, file_name_results))
 
     x_train, x_test, y_train, y_test = train_test_split(data.iloc[:, 4:], data.iloc[:, 3], test_size=0.2)
 
@@ -87,7 +72,7 @@ def run_algorithm():
 if __name__ == '__main__':
     gather_features()
     run_algorithm()
-
+#
 # if __name__ == '__main__':
 #     print("type extraction")
-#     Extractor("D:\\competetion\\", "KCLT").extract()
+#     Extractor(f"data{separator}train{separator}", "KCLT").extract()

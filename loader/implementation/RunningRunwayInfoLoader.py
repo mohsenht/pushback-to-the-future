@@ -3,14 +3,15 @@ import pandas as pd
 from datetime import timedelta
 
 from clean.extract.TypeContainer import TypeContainer
-from constants import runways_column_departure_runways, runways_column_arrival_runways
+from constants import runways_column_departure_runways, runways_column_arrival_runways, file_name_config
 from loader.DataLoader import DataLoader
+from path_generator import path_generator
 
 
 class RunningRunwayInfoLoader(DataLoader):
-    def __init__(self, file_path, type_file_path):
+    def __init__(self, airport, type_file_path):
         self.config = pd.read_csv(
-            file_path,
+            path_generator(airport, file_name_config),
             parse_dates=["timestamp"],
         ).sort_values("timestamp")
         self.container = TypeContainer.from_file(type_file_path)

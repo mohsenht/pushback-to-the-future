@@ -1,3 +1,7 @@
+import os
+
+separator = os.path.sep
+
 airports = [
     "KATL",
     "KCLT",
@@ -20,6 +24,8 @@ file_name_runways = "runways"
 file_name_standtimes = "standtimes"
 file_name_tbfm = "tbfm"
 file_name_tfm = "tfm"
+file_name_results = "results"
+file_name_labels = "train_labels_"
 
 mfs_column_aircraft_type = "aircraft_type"
 mfs_column_aircraft_engine_class = "aircraft_engine_class"
@@ -30,5 +36,8 @@ runways_column_departure_runways = "departure_runways"
 runways_column_arrival_runways = "arrival_runways"
 
 model_type_path = f"data{separator}model{separator}KCLT{separator}types.json"
+
+#train_path = f"data{separator}train{separator}"
+train_path = f"data{separator}small_data{separator}"
 
 
