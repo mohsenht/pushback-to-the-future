@@ -1,28 +1,19 @@
-from pandas import DataFrame, Timestamp
 import pandas as pd
-from datetime import timedelta
 
+from Input import Input
 from clean.extract.TypeContainer import TypeContainer
-from constants import runways_column_departure_runways, runways_column_arrival_runways, file_name_config
+from constants import runways_column_departure_runways, runways_column_arrival_runways
 from loader.DataLoader import DataLoader
-from path_generator import path_generator, types_path_generator
 
 
 class RunningRunwayInfoLoader(DataLoader):
-    def __init__(self, airport):
-        self.config = pd.read_csv(
-            path_generator(airport, file_name_config),
-            parse_dates=["timestamp"],
-        ).sort_values("timestamp")
-        self.container = TypeContainer.from_file(types_path_generator(airport))
 
-    def load_data(self, now: Timestamp, data: DataFrame) -> DataFrame:
-        now_running_runway = \
-            self.config.loc[(self.config.timestamp > now - timedelta(hours=30)) & (self.config.timestamp <= now)].iloc[
-                -1]
+    def load_data(self, now: pd.Timestamp, data: pd.DataFrame, input: Input,
+                  type_container: TypeContainer) -> pd.DataFrame:
+        now_running_runway = input.config.iloc[-1]
         boolean_feature_names = []
-        boolean_feature_names.extend(['de_' + s for s in self.container.runways_names])
-        boolean_feature_names.extend(['ar_' + s for s in self.container.runways_names])
+        boolean_feature_names.extend(['de_' + s for s in type_container.runways_names])
+        boolean_feature_names.extend(['ar_' + s for s in type_container.runways_names])
         new_data = pd.DataFrame(False, index=data.index, columns=boolean_feature_names)
         new_data = pd.concat([data, new_data], axis=1)
         results = new_data.apply(self.fill_runways_for_each_flight, args=(now_running_runway,), axis=1)

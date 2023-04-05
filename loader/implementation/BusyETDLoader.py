@@ -1,22 +1,17 @@
-from pandas import DataFrame, Timestamp
-import pandas as pd
 from datetime import timedelta
 
-from constants import file_name_etd, flight_id
+import pandas as pd
+
+from Input import Input
+from clean.extract.TypeContainer import TypeContainer
+from constants import flight_id
 from loader.DataLoader import DataLoader
-from path_generator import path_generator
 
 
 class BusyETDLoader(DataLoader):
-    def __init__(self, airport):
-        self.etd = pd.read_csv(
-            path_generator(airport, file_name_etd),
-            parse_dates=["departure_runway_estimated_time", "timestamp"],
-        ).sort_values("timestamp")
 
-    def load_data(self, now: Timestamp, data: DataFrame) -> DataFrame:
-        now_etd = self.etd.loc[(self.etd.timestamp > now - timedelta(hours=30)) & (self.etd.timestamp <= now)]
-        latest_now_etd = now_etd.groupby(flight_id).last()
+    def load_data(self, now: pd.Timestamp, data: pd.DataFrame, input: Input, type_container: TypeContainer) -> pd.DataFrame:
+        latest_now_etd = input.etd.groupby(flight_id).last()
         latest_now_etd = latest_now_etd.sort_values("departure_runway_estimated_time")
         results = data.apply(self.calculate_how_busy_is_departure, args=(latest_now_etd, now), axis=1)
         return results

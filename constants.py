@@ -4,17 +4,21 @@ separator = os.path.sep
 
 number_of_processors = 10
 
+# airports = [
+#     "KATL",
+#     "KCLT",
+#     "KDEN",
+#     "KDFW",
+#     "KJFK",
+#     "KMEM",
+#     "KMIA",
+#     "KORD",
+#     "KPHX",
+#     "KSEA"
+# ]
+
 airports = [
-    "KATL",
-    "KCLT",
-    "KDEN",
-    "KDFW",
-    "KJFK",
-    "KMEM",
-    "KMIA",
-    "KORD",
-    "KPHX",
-    "KSEA"
+    "KCLT"
 ]
 
 file_name_config = "config"
@@ -39,7 +43,7 @@ runways_column_arrival_runways = "arrival_runways"
 
 model_path = f"data{separator}model{separator}"
 
-#train_path = f"data{separator}train{separator}"
+# train_path = f"data{separator}train{separator}"
 train_path = f"data{separator}small_data{separator}"
 
 flight_id = "gufi"

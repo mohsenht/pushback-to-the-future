@@ -1,29 +1,15 @@
-from pandas import DataFrame, Timestamp
 import pandas as pd
-from datetime import timedelta
 
-from constants import file_name_runways, file_name_standtimes, flight_id
+from Input import Input
+from clean.extract.TypeContainer import TypeContainer
+from constants import flight_id
 from loader.DataLoader import DataLoader
-from path_generator import path_generator
 
 
 class ArrivalToGateTimeWeightedMeanLoader(DataLoader):
-    def __init__(self, airport):
-        self.runways = pd.read_csv(
-            path_generator(airport, file_name_runways),
-            parse_dates=["arrival_runway_actual_time", "timestamp"],
-        ).sort_values("timestamp")
-        self.standtimes = pd.read_csv(
-            path_generator(airport, file_name_standtimes),
-            parse_dates=["arrival_stand_actual_time", "timestamp"],
-        ).sort_values("timestamp")
 
-    def load_data(self, now: Timestamp, data: DataFrame) -> DataFrame:
-        now_runways = self.runways.loc[
-            (self.runways.timestamp > now - timedelta(hours=30)) & (self.runways.timestamp <= now)]
-        now_standtimes = self.standtimes.loc[
-            (self.standtimes.timestamp > now - timedelta(hours=30)) & (self.standtimes.timestamp <= now)]
-        merged_standtimes_runways = pd.merge(now_standtimes, now_runways, on=flight_id)
+    def load_data(self, now: pd.Timestamp, data: pd.DataFrame, input: Input, type_container: TypeContainer) -> pd.DataFrame:
+        merged_standtimes_runways = pd.merge(input.standtimes, input.runways, on=flight_id)
         merged_standtimes_runways['diff_stand_runway'] = (
                 (merged_standtimes_runways['arrival_stand_actual_time']
                  - merged_standtimes_runways['arrival_runway_actual_time']

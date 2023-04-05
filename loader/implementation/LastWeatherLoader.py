@@ -1,29 +1,23 @@
-from pandas import DataFrame, Timestamp
-import pandas as pd
 from datetime import timedelta
 
-from constants import file_name_lamp, cloud_category_BK, cloud_category_CL, \
+import pandas as pd
+
+from Input import Input
+from clean.extract.TypeContainer import TypeContainer
+from constants import cloud_category_BK, cloud_category_CL, \
     cloud_category_FEW, cloud_category_OV, cloud_category_SC, lightning_prob_N, lightning_prob_L, lightning_prob_M, \
     lightning_prob_H
 from loader.DataLoader import DataLoader
-from path_generator import path_generator
 
 
 class LastWeatherLoader(DataLoader):
-    def __init__(self, airport):
-        self.weather = pd.read_csv(
-            path_generator(airport, file_name_lamp),
-            parse_dates=["forecast_timestamp", "timestamp"],
-        ).sort_values("timestamp")
 
-    def load_data(self, now: Timestamp, data: DataFrame) -> DataFrame:
-        now_weather = self.weather.loc[
-            (self.weather.timestamp > now - timedelta(hours=30)) & (self.weather.timestamp <= now)]
+    def load_data(self, now: pd.Timestamp, data: pd.DataFrame, input: Input, type_container: TypeContainer) -> pd.DataFrame:
         data['departure_time'] = data.last_etd.apply(lambda x: timedelta(minutes=x)) + now
         data['departure_time'] = data['departure_time'].apply(
             lambda x: (x + timedelta(minutes=30)).replace(second=0, microsecond=0, minute=0,
                                                           hour=(x + timedelta(minutes=30)).hour))
-        now_weather = now_weather[now_weather['forecast_timestamp'].isin(data.departure_time.unique())].groupby(
+        now_weather = input.lamp[input.lamp['forecast_timestamp'].isin(data.departure_time.unique())].groupby(
             'forecast_timestamp').last()
         now_weather = now_weather.iloc[:, 1:]
         weather = pd.merge(data, now_weather, how='left', left_on='departure_time', right_on='forecast_timestamp')
