@@ -6,8 +6,7 @@ import xgboost as xgb
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 
-from clean.extract.Extractor import Extractor
-from constants import file_name_results, number_of_processors, train_path
+from constants import file_name_results, number_of_processors
 from loader.implementation.AircraftInfoLoader import AircraftInfoLoader
 from loader.implementation.ArrivalToGateTimeWeightedMeanLoader import ArrivalToGateTimeWeightedMeanLoader
 from loader.implementation.BusyETDLoader import BusyETDLoader
@@ -17,7 +16,7 @@ from loader.implementation.LastTwoETDLoader import LastTwoETDLoader
 from loader.implementation.LastWeatherLoader import LastWeatherLoader
 from loader.implementation.RunningRunwayInfoLoader import RunningRunwayInfoLoader
 from loader.implementation.WeightedETDLoader import WeightedETDLoader
-from path_generator import path_generator, labels_path_generator, types_path_generator
+from path_generator import path_generator, labels_path_generator
 
 
 def gather_features(airport_name):
