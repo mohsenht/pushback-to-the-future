@@ -2,6 +2,7 @@ from pandas import DataFrame, Timestamp
 import pandas as pd
 from datetime import timedelta
 
+from constants import flight_id
 from loader.DataLoader import DataLoader
 
 
@@ -22,12 +23,12 @@ class RunwayETDMeanLoader(DataLoader):
             & (self.runways.timestamp <= now)] \
             .dropna(subset=['departure_runway_actual_time'])
         now_etd = self.etd.loc[(self.etd.timestamp > now - timedelta(hours=30)) & (self.etd.timestamp <= now)]
-        now_etd = now_etd[now_etd['gufi'].isin(now_runways['gufi'])]
-        grouped_now_etd = now_etd.groupby('gufi')
+        now_etd = now_etd[now_etd[flight_id].isin(now_runways[flight_id])]
+        grouped_now_etd = now_etd.groupby(flight_id)
         results = grouped_now_etd.apply(self.find_etd_for_each_gufi, arg1=now_runways)
 
-        df = pd.DataFrame(results.to_list(), columns=['gufi', 'etd_new'])
-        merged_df = now_runways.merge(df[['gufi', 'etd_new']], on='gufi', how='left')
+        df = pd.DataFrame(results.to_list(), columns=[flight_id, 'etd_new'])
+        merged_df = now_runways.merge(df[[flight_id, 'etd_new']], on=flight_id, how='left')
 
         data['etd_new'] = merged_df.dropna(subset=['etd_new'])['etd_new'].mean()
 
@@ -41,4 +42,4 @@ class RunwayETDMeanLoader(DataLoader):
         etd = group.loc[runway_unique['departure_runway_actual_time'] > group.timestamp]
         if etd.empty:
             return
-        return runway_unique['gufi'], runway_unique['departure_runway_actual_time'] - etd.iloc[-1]['departure_runway_estimated_time']
+        return runway_unique[flight_id], runway_unique['departure_runway_actual_time'] - etd.iloc[-1]['departure_runway_estimated_time']

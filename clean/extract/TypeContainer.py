@@ -1,5 +1,8 @@
 import json
 
+from constants import mfs_column_aircraft_type, mfs_column_aircraft_engine_class, mfs_column_major_carrier, \
+    mfs_column_flight_type
+
 
 class TypeContainer:
     def __init__(self,
@@ -19,10 +22,10 @@ class TypeContainer:
         with open(file_path, "r") as f:
             json_string = f.read()
         my_dict = json.loads(json_string)
-        return cls(my_dict["aircraft_type"],
-                   my_dict["aircraft_engine_class"],
-                   my_dict["major_carrier"],
-                   my_dict["flight_type"],
+        return cls(my_dict[mfs_column_aircraft_type],
+                   my_dict[mfs_column_aircraft_engine_class],
+                   my_dict[mfs_column_major_carrier],
+                   my_dict[mfs_column_flight_type],
                    my_dict["runways_names"]
                    )
 

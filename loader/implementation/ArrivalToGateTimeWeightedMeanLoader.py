@@ -2,7 +2,7 @@ from pandas import DataFrame, Timestamp
 import pandas as pd
 from datetime import timedelta
 
-from constants import file_name_runways, file_name_standtimes
+from constants import file_name_runways, file_name_standtimes, flight_id
 from loader.DataLoader import DataLoader
 from path_generator import path_generator
 
@@ -23,7 +23,7 @@ class ArrivalToGateTimeWeightedMeanLoader(DataLoader):
             (self.runways.timestamp > now - timedelta(hours=30)) & (self.runways.timestamp <= now)]
         now_standtimes = self.standtimes.loc[
             (self.standtimes.timestamp > now - timedelta(hours=30)) & (self.standtimes.timestamp <= now)]
-        merged_standtimes_runways = pd.merge(now_standtimes, now_runways, on='gufi')
+        merged_standtimes_runways = pd.merge(now_standtimes, now_runways, on=flight_id)
         merged_standtimes_runways['diff_stand_runway'] = (
                 (merged_standtimes_runways['arrival_stand_actual_time']
                  - merged_standtimes_runways['arrival_runway_actual_time']

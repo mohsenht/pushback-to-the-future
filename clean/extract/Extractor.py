@@ -1,6 +1,9 @@
 from clean.extract.TypeContainer import TypeContainer
 from clean.extract.TypeExtractor import TypeExtractor
-from constants import separator, file_name_mfs, file_name_config, runways_column_departure_runways, runways_column_arrival_runways
+from constants import separator, file_name_mfs, file_name_config, runways_column_departure_runways, \
+    runways_column_arrival_runways, mfs_column_aircraft_type, mfs_column_aircraft_engine_class, \
+    mfs_column_major_carrier, mfs_column_flight_type
+from path_generator import types_path_generator
 
 
 class Extractor:
@@ -25,11 +28,15 @@ class Extractor:
 
     def extract(self):
         container = TypeContainer(
-            TypeExtractor(self.airport_name, self.file_path, file_name_mfs, "aircraft_type").extract_types(),
-            TypeExtractor(self.airport_name, self.file_path, file_name_mfs, "aircraft_engine_class").extract_types(),
-            TypeExtractor(self.airport_name, self.file_path, file_name_mfs, "major_carrier").extract_types(),
-            TypeExtractor(self.airport_name, self.file_path, file_name_mfs, "flight_type").extract_types(),
+            TypeExtractor(
+                self.airport_name, self.file_path, file_name_mfs, mfs_column_aircraft_type).extract_types(),
+            TypeExtractor(
+                self.airport_name, self.file_path, file_name_mfs, mfs_column_aircraft_engine_class).extract_types(),
+            TypeExtractor(
+                self.airport_name, self.file_path, file_name_mfs, mfs_column_major_carrier).extract_types(),
+            TypeExtractor(
+                self.airport_name, self.file_path, file_name_mfs, mfs_column_flight_type).extract_types(),
             self.extract_runways()
         )
 
-        container.to_json_file(f"data{separator}model{separator}{self.airport_name}{separator}types.json")
+        container.to_json_file(types_path_generator(self.airport_name))

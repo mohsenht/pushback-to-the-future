@@ -1,4 +1,4 @@
-from constants import train_path, file_name_etd, file_name_labels, separator
+from constants import train_path, file_name_labels, separator, model_path
 
 
 def path_generator(airport, file_name):
@@ -7,3 +7,7 @@ def path_generator(airport, file_name):
 
 def labels_path_generator(airport):
     return f"{train_path}{airport}{separator}{file_name_labels}{airport}.csv"
+
+
+def types_path_generator(airport):
+    return f"{model_path}{airport}{separator}types.json"

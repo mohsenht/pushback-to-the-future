@@ -3,15 +3,15 @@ import pandas as pd
 
 from clean.extract.TypeContainer import TypeContainer
 from constants import mfs_column_aircraft_type, mfs_column_major_carrier, mfs_column_aircraft_engine_class, \
-    mfs_column_flight_type, file_name_mfs
+    mfs_column_flight_type, file_name_mfs, flight_id
 from loader.DataLoader import DataLoader
-from path_generator import path_generator
+from path_generator import path_generator, types_path_generator
 
 
 class AircraftInfoLoader(DataLoader):
-    def __init__(self, airport, type_file_path):
-        self.mfs = pd.read_csv(path_generator(airport, file_name_mfs),)
-        self.container = TypeContainer.from_file(type_file_path)
+    def __init__(self, airport):
+        self.mfs = pd.read_csv(path_generator(airport, file_name_mfs))
+        self.container = TypeContainer.from_file(types_path_generator(airport))
 
     def load_data(self, now: Timestamp, data: DataFrame) -> DataFrame:
         boolean_feature_names = []
@@ -21,7 +21,7 @@ class AircraftInfoLoader(DataLoader):
         boolean_feature_names.extend(['m_' + s for s in self.container.major_carrier])
         new_data = pd.DataFrame(False, index=data.index, columns=boolean_feature_names)
         data = pd.concat([data, new_data], axis=1)
-        filtered_mfs = self.mfs[self.mfs['gufi'].isin(data.gufi)]
+        filtered_mfs = self.mfs[self.mfs[flight_id].isin(data.gufi)]
         results = data.apply(self.fill_mfs_for_each_flight, args=(filtered_mfs,), axis=1)
 
         return results

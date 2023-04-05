@@ -2,6 +2,8 @@ import os
 
 separator = os.path.sep
 
+number_of_processors = 10
+
 airports = [
     "KATL",
     "KCLT",
@@ -35,9 +37,20 @@ mfs_column_flight_type = "flight_type"
 runways_column_departure_runways = "departure_runways"
 runways_column_arrival_runways = "arrival_runways"
 
-model_type_path = f"data{separator}model{separator}KCLT{separator}types.json"
+model_path = f"data{separator}model{separator}"
 
 #train_path = f"data{separator}train{separator}"
 train_path = f"data{separator}small_data{separator}"
 
+flight_id = "gufi"
 
+cloud_category_BK = "BK"
+cloud_category_CL = "CL"
+cloud_category_FEW = "FEW"
+cloud_category_OV = "OV"
+cloud_category_SC = "SC"
+
+lightning_prob_N = "N"
+lightning_prob_L = "L"
+lightning_prob_M = "M"
+lightning_prob_H = "H"

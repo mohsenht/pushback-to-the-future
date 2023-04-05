@@ -2,6 +2,8 @@ import math
 from typing import List
 import pandas as pd
 
+from constants import separator
+
 
 class TypeExtractor:
     def __init__(self, airport_name, file_path, file_name, column_name):
