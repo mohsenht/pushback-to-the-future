@@ -4,6 +4,7 @@ import multiprocessing as mp
 import xgboost as xgb
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
+import time
 
 from clean.extract.Extractor import Extractor
 from constants import model_type_path, file_name_results, file_name_labels
@@ -70,8 +71,13 @@ def run_algorithm():
 
 
 if __name__ == '__main__':
+    start_time = time.time()
     gather_features()
     run_algorithm()
+    end_time = time.time()
+
+    elapsed_time = end_time - start_time
+    print(f"time: {elapsed_time}")
 #
 # if __name__ == '__main__':
 #     print("type extraction")
