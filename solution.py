@@ -17,7 +17,7 @@ def load_model(solution_directory: Path) -> Any:
     airport_dict = {}
 
     for airport in airports:
-        xgboost_model = xgb.Booster()
+        xgboost_model = xgb.XGBRegressor()
         xgboost_model.load_model(f"{solution_directory}{separator}{model_path_generator(airport)}")
         type_container = TypeContainer.from_file(f"{solution_directory}{separator}{types_path_generator(airport)}")
         airport_dict[airport] = AirportModel(xgboost_model, type_container)
@@ -55,8 +55,8 @@ def predict(
     prediction = partial_submission_format.copy()
     data = model.data_gatherer.load_features(prediction_time, partial_submission_format, input,
                                              model.airport_dict[airport].type_container)
+    features = data.iloc[:, 4:]
+    y_pred = model.airport_dict[airport].model.predict(features)
 
-    y_pred = model.airport_dict[airport].xgboost_model.predict(data)
-
-    prediction["minutes_until_pushback"] = y_pred.clip(lower=0).fillna(1)
+    prediction["minutes_until_pushback"] = y_pred
     return prediction
