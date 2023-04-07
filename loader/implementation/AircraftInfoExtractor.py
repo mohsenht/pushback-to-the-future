@@ -1,15 +1,18 @@
 import pandas as pd
 
-from Input import Input
-from clean.extract.TypeContainer import TypeContainer
+from model.Input import Input
+from clean.TypeContainer import TypeContainer
 from constants import mfs_column_aircraft_type, mfs_column_major_carrier, mfs_column_aircraft_engine_class, \
     mfs_column_flight_type, flight_id
-from loader.DataLoader import DataLoader
+from loader.FeatureExtractor import FeatureExtractor
 
 
-class AircraftInfoLoader(DataLoader):
+class AircraftInfoExtractor(FeatureExtractor):
 
-    def load_data(self, now: pd.Timestamp, data: pd.DataFrame, input: Input,
+    def load_data(self,
+                  now: pd.Timestamp,
+                  data: pd.DataFrame,
+                  input_data: Input,
                   type_container: TypeContainer) -> pd.DataFrame:
         boolean_feature_names = []
         boolean_feature_names.extend(['a_' + s for s in type_container.aircraft_type])
@@ -18,7 +21,7 @@ class AircraftInfoLoader(DataLoader):
         boolean_feature_names.extend(['m_' + s for s in type_container.major_carrier])
         new_data = pd.DataFrame(False, index=data.index, columns=boolean_feature_names)
         data = pd.concat([data, new_data], axis=1)
-        filtered_mfs = input.mfs[input.mfs[flight_id].isin(data.gufi)]
+        filtered_mfs = input_data.mfs[input_data.mfs[flight_id].isin(data.gufi)]
         results = data.apply(self.fill_mfs_for_each_flight, args=(filtered_mfs,), axis=1)
 
         return results

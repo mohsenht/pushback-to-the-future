@@ -3,13 +3,13 @@ import xgboost as xgb
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 
-from FeatureLoader import FeatureLoader
-from Predictor import Predictor
-from SubmissionFormatRunner import SubmissionFormatRunner
-from clean.extract.Extractor import Extractor
-from constants import file_name_results, number_of_processors, model_path, separator, airports, train_path
-from path_generator import path_generator, labels_path_generator, model_path_generator, \
+from clean.Extractor import Extractor
+from constants import file_name_results, airports, train_path
+from path_generator_utility import path_generator, labels_path_generator, model_path_generator, \
     open_arena_submission_format_path_generator
+from prediction.UnseenDataRunner import UnseenDataRunner
+from prediction.implementors.FeatureLoader import FeatureLoader
+from prediction.implementors.Predictor import Predictor
 
 
 def run_algorithm(airport_name):
@@ -26,9 +26,11 @@ def run_algorithm(airport_name):
 
 
 def train():
-    for airport in airports:
-        data = SubmissionFormatRunner(labels_path_generator(airport), FeatureLoader()).run([airport])
-        data.to_csv(path_generator(airport, file_name_results), index=False)
+    for airport_name in airports:
+        labeled_data = pd.read_csv(labels_path_generator(airport_name), parse_dates=["timestamp"]) \
+            .sort_values("timestamp")
+        data = UnseenDataRunner(labeled_data, FeatureLoader()).run([airport_name])
+        data.to_csv(path_generator(airport_name, file_name_results), index=False)
         labels = data.iloc[:, 3]
         features = data.iloc[:, 4:]
         params = {
@@ -39,17 +41,28 @@ def train():
 
         model = xgb.XGBRegressor(n_estimators=100, **params)
         model.fit(features, labels)
-        model.save_model(model_path_generator(airport))
+        model.save_model(model_path_generator(airport_name))
 
 
 def open_arena():
-    data = SubmissionFormatRunner(open_arena_submission_format_path_generator(), Predictor()).run(airports)
-    data.to_csv(path_generator("KCLT", "asghar"), index=False)
+    unlabeled_data = pd.read_csv(open_arena_submission_format_path_generator(), parse_dates=["timestamp"]) \
+        .sort_values("timestamp")
+    predictions = UnseenDataRunner(unlabeled_data, Predictor()).run(airports)
+
+    airport_submission_format = pd.read_csv(open_arena_submission_format_path_generator(), parse_dates=["timestamp"])
+    predictions = (
+        predictions.set_index(["gufi", "timestamp", "airport"])
+        .loc[
+            airport_submission_format.set_index(["gufi", "timestamp", "airport"]).index
+        ]
+        .reset_index()
+    )
+    predictions.to_csv(f"{train_path}result.csv", index=False)
 
 
 if __name__ == '__main__':
     for airport in airports:
         Extractor(f"{train_path}", airport).extract()
-    # train(airports)
+    # train()
     # run_algorithm("KCLT")
     open_arena()

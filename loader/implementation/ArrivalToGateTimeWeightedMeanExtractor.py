@@ -1,15 +1,19 @@
 import pandas as pd
 
-from Input import Input
-from clean.extract.TypeContainer import TypeContainer
+from model.Input import Input
+from clean.TypeContainer import TypeContainer
 from constants import flight_id
-from loader.DataLoader import DataLoader
+from loader.FeatureExtractor import FeatureExtractor
 
 
-class ArrivalToGateTimeWeightedMeanLoader(DataLoader):
+class ArrivalToGateTimeWeightedMeanExtractor(FeatureExtractor):
 
-    def load_data(self, now: pd.Timestamp, data: pd.DataFrame, input: Input, type_container: TypeContainer) -> pd.DataFrame:
-        merged_standtimes_runways = pd.merge(input.standtimes, input.runways, on=flight_id)
+    def load_data(self,
+                  now: pd.Timestamp,
+                  data: pd.DataFrame,
+                  input_data: Input,
+                  type_container: TypeContainer) -> pd.DataFrame:
+        merged_standtimes_runways = pd.merge(input_data.standtimes, input_data.runways, on=flight_id)
         merged_standtimes_runways['diff_stand_runway'] = (
                 (merged_standtimes_runways['arrival_stand_actual_time']
                  - merged_standtimes_runways['arrival_runway_actual_time']

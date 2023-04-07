@@ -4,9 +4,9 @@ from typing import Any
 
 import pandas as pd
 
-from Input import Input
-from LoadRawData import LoadRawData
-from Model import Model
+
+from model.Model import Model
+from prediction.LoadRawData import LoadRawData
 
 
 class PredictInterface(ABC):

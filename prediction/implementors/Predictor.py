@@ -4,9 +4,9 @@ from typing import Any
 
 import pandas as pd
 
-from LoadRawData import LoadRawData
-from Model import Model
-from PredictInterface import PredictInterface
+from prediction.LoadRawData import LoadRawData
+from model.Model import Model
+from prediction.PredictInterface import PredictInterface
 from solution import predict, load_model
 
 
@@ -22,6 +22,9 @@ class Predictor(PredictInterface):
                 airport: str,
                 model: Model) -> pd.DataFrame:
         input_data = raw_data.get_input(now)
+        now_data = data.loc[
+            data.timestamp == now
+            ].reset_index(drop=True)
         return predict(
             input_data.config,
             input_data.etd,
@@ -34,7 +37,7 @@ class Predictor(PredictInterface):
             input_data.tfm,
             airport,
             now,
-            data,
+            now_data,
             model,
             Path(os.getcwd()),
         )

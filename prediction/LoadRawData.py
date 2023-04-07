@@ -2,10 +2,10 @@ import pandas as pd
 from datetime import timedelta
 from pandas import Timestamp
 
-from Input import Input
+from model.Input import Input
 from constants import file_name_etd, file_name_runways, file_name_standtimes, file_name_lamp, file_name_config, \
     file_name_mfs
-from path_generator import path_generator
+from path_generator_utility import path_generator
 
 
 class LoadRawData:
@@ -35,17 +35,33 @@ class LoadRawData:
 
     def get_input(self, now: Timestamp):
         config = self.config.loc[
-            (self.config.timestamp > now - timedelta(hours=30)) & (self.config.timestamp <= now)]
-        etd = self.etd.loc[(self.etd.timestamp > now - timedelta(hours=30)) & (self.etd.timestamp <= now)]
+            (self.config.timestamp > now - timedelta(hours=30)) & (self.config.timestamp <= now)
+            ]
+
+        etd = self.etd.loc[
+            (self.etd.timestamp > now - timedelta(hours=30)) & (self.etd.timestamp <= now)
+            ]
+
         first_position = pd.DataFrame()
-        lamp = self.weather.loc[(self.weather.timestamp > now - timedelta(hours=30)) & (self.weather.timestamp <= now)]
+
+        lamp = self.weather.loc[
+            (self.weather.timestamp > now - timedelta(hours=30)) & (self.weather.timestamp <= now)
+            ]
+
         mfs = self.mfs
+
         runways = self.runways.loc[
-            (self.runways.timestamp > now - timedelta(hours=30)) & (self.runways.timestamp <= now)]
+            (self.runways.timestamp > now - timedelta(hours=30)) & (self.runways.timestamp <= now)
+            ]
+
         standtimes = self.standtimes.loc[
-            (self.standtimes.timestamp > now - timedelta(hours=30)) & (self.standtimes.timestamp <= now)]
+            (self.standtimes.timestamp > now - timedelta(hours=30)) & (self.standtimes.timestamp <= now)
+            ]
+
         tbfm = pd.DataFrame()
+
         tfm = pd.DataFrame()
+
         return Input(
             config,
             etd,

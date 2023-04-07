@@ -2,7 +2,7 @@ from unittest import TestCase
 import pandas as pd
 
 from constants import separator
-from loader.implementation.LastWeatherLoader import LastWeatherLoader
+from loader.implementation.LastWeatherExtractor import LastWeatherExtractor
 
 
 class TestLastWeatherLoader(TestCase):
@@ -13,5 +13,5 @@ class TestLastWeatherLoader(TestCase):
 
     def test_load_data(self):
         lamp_path = f"data{separator}lamp_2_days.csv"
-        data = LastWeatherLoader(lamp_path).load_data(self.now, self.data)
+        data = LastWeatherExtractor(lamp_path).load_data(self.now, self.data)
         self.fail()

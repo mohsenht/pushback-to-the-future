@@ -4,16 +4,15 @@ from pathlib import Path
 
 import pandas as pd
 
-from LoadRawData import LoadRawData
-from PredictInterface import PredictInterface
+from prediction.LoadRawData import LoadRawData
+from prediction.PredictInterface import PredictInterface
 from constants import number_of_processors
 
 
-class SubmissionFormatRunner:
+class UnseenDataRunner:
 
-    def __init__(self, file_path, predict_interface: PredictInterface):
-        self.submission_format = pd.read_csv(file_path, parse_dates=["timestamp"]) \
-            .sort_values("timestamp")
+    def __init__(self, unlableled_data, predict_interface: PredictInterface):
+        self.unlabeled_data = unlableled_data
         self.predict_interface = predict_interface
 
     def run(self, airports) -> pd.DataFrame:
@@ -22,8 +21,8 @@ class SubmissionFormatRunner:
         for airport in airports:
             raw_data = LoadRawData(airport)
 
-            airport_submission_format = self.submission_format.loc[
-                self.submission_format.airport == airport
+            airport_submission_format = self.unlabeled_data.loc[
+                self.unlabeled_data.airport == airport
                 ]
             timestamps = pd.to_datetime(airport_submission_format.timestamp.unique())
 

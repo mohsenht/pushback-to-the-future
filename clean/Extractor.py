@@ -1,9 +1,9 @@
-from clean.extract.TypeContainer import TypeContainer
-from clean.extract.TypeExtractor import TypeExtractor
-from constants import separator, file_name_mfs, file_name_config, runways_column_departure_runways, \
+from clean.TypeContainer import TypeContainer
+from clean.TypeExtractor import TypeExtractor
+from constants import file_name_mfs, file_name_config, runways_column_departure_runways, \
     runways_column_arrival_runways, mfs_column_aircraft_type, mfs_column_aircraft_engine_class, \
     mfs_column_major_carrier, mfs_column_flight_type
-from path_generator import types_path_generator
+from path_generator_utility import types_path_generator
 
 
 class Extractor:

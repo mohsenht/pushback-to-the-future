@@ -1,15 +1,19 @@
 import pandas as pd
 
-from Input import Input
-from clean.extract.TypeContainer import TypeContainer
+from model.Input import Input
+from clean.TypeContainer import TypeContainer
 from constants import flight_id
-from loader.DataLoader import DataLoader
+from loader.FeatureExtractor import FeatureExtractor
 
 
-class LastTwoETDLoader(DataLoader):
+class LastTwoETDExtractor(FeatureExtractor):
 
-    def load_data(self, now: pd.Timestamp, data: pd.DataFrame, input: Input, type_container: TypeContainer) -> pd.DataFrame:
-        now_etd = input.etd[input.etd[flight_id].isin(data[flight_id])]
+    def load_data(self,
+                  now: pd.Timestamp,
+                  data: pd.DataFrame,
+                  input_data: Input,
+                  type_container: TypeContainer) -> pd.DataFrame:
+        now_etd = input_data.etd[input_data.etd[flight_id].isin(data[flight_id])]
         diff_etd = pd.DataFrame(0, index=now_etd.index, columns=['diff_etd'])
         diff_etd = pd.concat([now_etd, diff_etd], axis=1)
         diff_etd['diff_etd'] = (now_etd['departure_runway_estimated_time'] - now).dt.total_seconds()

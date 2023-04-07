@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from clean.extract.TypeExtractor import TypeExtractor
+from clean.TypeExtractor import TypeExtractor
 from main import separator
 
 

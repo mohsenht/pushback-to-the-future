@@ -1,16 +1,19 @@
 import pandas as pd
 
-from Input import Input
-from clean.extract.TypeContainer import TypeContainer
+from model.Input import Input
+from clean.TypeContainer import TypeContainer
 from constants import runways_column_departure_runways, runways_column_arrival_runways
-from loader.DataLoader import DataLoader
+from loader.FeatureExtractor import FeatureExtractor
 
 
-class RunningRunwayInfoLoader(DataLoader):
+class RunningRunwayInfoExtractor(FeatureExtractor):
 
-    def load_data(self, now: pd.Timestamp, data: pd.DataFrame, input: Input,
+    def load_data(self,
+                  now: pd.Timestamp,
+                  data: pd.DataFrame,
+                  input_data: Input,
                   type_container: TypeContainer) -> pd.DataFrame:
-        now_running_runway = input.config.iloc[-1]
+        now_running_runway = input_data.config.iloc[-1]
         boolean_feature_names = []
         boolean_feature_names.extend(['de_' + s for s in type_container.runways_names])
         boolean_feature_names.extend(['ar_' + s for s in type_container.runways_names])

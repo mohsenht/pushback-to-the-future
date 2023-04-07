@@ -1,17 +1,17 @@
 import pandas as pd
 
-from Input import Input
-from clean.extract.TypeContainer import TypeContainer
+from model.Input import Input
+from clean.TypeContainer import TypeContainer
 from constants import flight_id
-from loader.DataLoader import DataLoader
+from loader.FeatureExtractor import FeatureExtractor
 
 
-class WeightedETDLoader(DataLoader):
+class WeightedETDLoader(FeatureExtractor):
 
-    def load_data(self, now: pd.Timestamp, data: pd.DataFrame, input: Input, type_container: TypeContainer) -> pd.DataFrame:
-        w_etd = pd.DataFrame(0, index=input.etd.index, columns=['w_etd'])
-        w_etd['w_etd'] = (input.etd['departure_runway_estimated_time'] - now).dt.total_seconds()
-        now_etd = pd.concat([input.etd, w_etd], axis=1)
+    def load_data(self, now: pd.Timestamp, data: pd.DataFrame, input_data: Input, type_container: TypeContainer) -> pd.DataFrame:
+        w_etd = pd.DataFrame(0, index=input_data.etd.index, columns=['w_etd'])
+        w_etd['w_etd'] = (input_data.etd['departure_runway_estimated_time'] - now).dt.total_seconds()
+        now_etd = pd.concat([input_data.etd, w_etd], axis=1)
         latest_now_etd = now_etd.groupby(flight_id)['w_etd'].ewm(span=2).mean()
         etd = data.merge(
             latest_now_etd, how="left", on=flight_id

@@ -1,16 +1,17 @@
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import pandas as pd
 import xgboost as xgb
 
-from AirportModel import AirportModel
-from FeatureExtractor import FeatureExtractor
-from Input import Input
-from Model import Model
-from clean.extract.TypeContainer import TypeContainer
+from model.AirportModel import AirportModel
+from loader.FeatureExtractorContainer import FeatureExtractorContainer
+from model.Input import Input
+from model.Model import Model
+from clean.TypeContainer import TypeContainer
 from constants import airports, separator
-from path_generator import model_path_generator, types_path_generator
+from path_generator_utility import model_path_generator, types_path_generator
 
 
 def load_model(solution_directory: Path) -> Any:
@@ -22,7 +23,7 @@ def load_model(solution_directory: Path) -> Any:
         type_container = TypeContainer.from_file(f"{solution_directory}{separator}{types_path_generator(airport)}")
         airport_dict[airport] = AirportModel(xgboost_model, type_container)
 
-    return Model(airport_dict, FeatureExtractor().data_gatherer)
+    return Model(airport_dict, FeatureExtractorContainer().data_gatherer)
 
 
 def predict(
@@ -53,10 +54,14 @@ def predict(
         tfm,
     )
     prediction = partial_submission_format.copy()
-    data = model.data_gatherer.load_features(prediction_time, partial_submission_format, input,
-                                             model.airport_dict[airport].type_container)
+    data = model.data_gatherer.load_features(
+        prediction_time,
+        partial_submission_format,
+        input,
+        model.airport_dict[airport].type_container
+    )
     features = data.iloc[:, 4:]
     y_pred = model.airport_dict[airport].model.predict(features)
 
-    prediction["minutes_until_pushback"] = y_pred
+    prediction["minutes_until_pushback"] = np.maximum(y_pred.round(), 0).astype(int)
     return prediction
