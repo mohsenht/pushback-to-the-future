@@ -27,3 +27,6 @@ ENV/
 *.swp
 Thumbs.db
 .DS_Store
+
+# data files
+data/train
