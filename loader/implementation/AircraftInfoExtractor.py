@@ -2,8 +2,8 @@ import pandas as pd
 
 from model.Input import Input
 from clean.TypeContainer import TypeContainer
-from constants import mfs_column_aircraft_type, mfs_column_major_carrier, mfs_column_aircraft_engine_class, \
-    mfs_column_flight_type, flight_id
+from constants import MFS_COLUMN_AIRCRAFT_TYPE, MFS_COLUMN_MAJOR_CARRIER, MFS_COLUMN_AIRCRAFT_ENGINE_CLASS, \
+    MFS_COLUMN_FLIGHT_TYPE, FLIGHT_ID
 from loader.FeatureExtractor import FeatureExtractor
 
 
@@ -21,7 +21,7 @@ class AircraftInfoExtractor(FeatureExtractor):
         boolean_feature_names.extend(['m_' + s for s in type_container.major_carrier])
         new_data = pd.DataFrame(False, index=data.index, columns=boolean_feature_names)
         data = pd.concat([data, new_data], axis=1)
-        filtered_mfs = input_data.mfs[input_data.mfs[flight_id].isin(data.gufi)]
+        filtered_mfs = input_data.mfs[input_data.mfs[FLIGHT_ID].isin(data.gufi)]
         results = data.apply(self.fill_mfs_for_each_flight, args=(filtered_mfs,), axis=1)
 
         return results
@@ -31,10 +31,10 @@ class AircraftInfoExtractor(FeatureExtractor):
         if mfs_dataframe.empty:
             return
         mfs = mfs_dataframe.iloc[0]
-        aircraft_type = f"a_{mfs[mfs_column_aircraft_type]}"
-        aircraft_engine_class = f"e_{mfs[mfs_column_aircraft_engine_class]}"
-        major_carrier = f"m_{mfs[mfs_column_major_carrier]}"
-        flight_type = f"f_{mfs[mfs_column_flight_type]}"
+        aircraft_type = f"a_{mfs[MFS_COLUMN_AIRCRAFT_TYPE]}"
+        aircraft_engine_class = f"e_{mfs[MFS_COLUMN_AIRCRAFT_ENGINE_CLASS]}"
+        major_carrier = f"m_{mfs[MFS_COLUMN_MAJOR_CARRIER]}"
+        flight_type = f"f_{mfs[MFS_COLUMN_FLIGHT_TYPE]}"
 
         if hasattr(x, aircraft_type):
             x[aircraft_type] = True

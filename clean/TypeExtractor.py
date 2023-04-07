@@ -2,7 +2,7 @@ import math
 from typing import List
 import pandas as pd
 
-from constants import separator
+from constants import SEPARATOR
 
 
 class TypeExtractor:
@@ -13,7 +13,7 @@ class TypeExtractor:
         self.column_name = column_name
 
     def extract_types(self) -> List[str]:
-        dataframe = pd.read_csv(f"{self.file_path}{self.airport_name}{separator}{self.airport_name}_{self.file_name}.csv")
+        dataframe = pd.read_csv(f"{self.file_path}{self.airport_name}{SEPARATOR}{self.airport_name}_{self.file_name}.csv")
         lst = dataframe[self.column_name].unique().tolist()
         lst = [str(x) if (isinstance(x, float) and math.isnan(x)) else str(x) if isinstance(x, float) else 'unknown' if x is None else str(x) for x in lst]
         if 'nan' not in lst:

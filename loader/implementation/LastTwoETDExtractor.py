@@ -2,7 +2,7 @@ import pandas as pd
 
 from model.Input import Input
 from clean.TypeContainer import TypeContainer
-from constants import flight_id
+from constants import FLIGHT_ID
 from loader.FeatureExtractor import FeatureExtractor
 
 
@@ -13,14 +13,14 @@ class LastTwoETDExtractor(FeatureExtractor):
                   data: pd.DataFrame,
                   input_data: Input,
                   type_container: TypeContainer) -> pd.DataFrame:
-        now_etd = input_data.etd[input_data.etd[flight_id].isin(data[flight_id])]
+        now_etd = input_data.etd[input_data.etd[FLIGHT_ID].isin(data[FLIGHT_ID])]
         diff_etd = pd.DataFrame(0, index=now_etd.index, columns=['diff_etd'])
         diff_etd = pd.concat([now_etd, diff_etd], axis=1)
         diff_etd['diff_etd'] = (now_etd['departure_runway_estimated_time'] - now).dt.total_seconds()
-        latest_now_etd = diff_etd.groupby(flight_id).apply(self.last_two_diff).reset_index(drop=True)
+        latest_now_etd = diff_etd.groupby(FLIGHT_ID).apply(self.last_two_diff).reset_index(drop=True)
 
         etd = data.merge(
-            latest_now_etd, how="left", on=flight_id
+            latest_now_etd, how="left", on=FLIGHT_ID
         ).diff_two_etd
         data["diff_two_etd"] = etd / 60
         return data

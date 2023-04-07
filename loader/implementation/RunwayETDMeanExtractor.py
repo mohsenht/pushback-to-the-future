@@ -1,7 +1,7 @@
 import pandas as pd
 
 from model.Input import Input
-from constants import flight_id
+from constants import FLIGHT_ID
 from loader.FeatureExtractor import FeatureExtractor
 
 
@@ -17,12 +17,12 @@ class RunwayETDMeanExtractor(FeatureExtractor):
                   input_data: Input,
                   type_container: TypeContainer) -> pd.DataFrame:
         now_runways = input_data.runways.dropna(subset=['departure_runway_actual_time'])
-        now_etd = input_data.etd[input_data.etd[flight_id].isin(now_runways[flight_id])]
-        grouped_now_etd = now_etd.groupby(flight_id).last()
+        now_etd = input_data.etd[input_data.etd[FLIGHT_ID].isin(now_runways[FLIGHT_ID])]
+        grouped_now_etd = now_etd.groupby(FLIGHT_ID).last()
         results = grouped_now_etd.apply(self.find_etd_for_each_gufi, arg1=now_runways)
 
-        df = pd.DataFrame(results.to_list(), columns=[flight_id, 'etd_new'])
-        merged_df = now_runways.merge(df[[flight_id, 'etd_new']], on=flight_id, how='left')
+        df = pd.DataFrame(results.to_list(), columns=[FLIGHT_ID, 'etd_new'])
+        merged_df = now_runways.merge(df[[FLIGHT_ID, 'etd_new']], on=FLIGHT_ID, how='left')
 
         data['etd_new'] = merged_df.dropna(subset=['etd_new'])['etd_new'].mean()
 
@@ -36,5 +36,5 @@ class RunwayETDMeanExtractor(FeatureExtractor):
         etd = group.loc[runway_unique['departure_runway_actual_time'] > group.timestamp]
         if etd.empty:
             return
-        return runway_unique[flight_id], runway_unique['departure_runway_actual_time'] - etd.iloc[-1][
+        return runway_unique[FLIGHT_ID], runway_unique['departure_runway_actual_time'] - etd.iloc[-1][
             'departure_runway_estimated_time']

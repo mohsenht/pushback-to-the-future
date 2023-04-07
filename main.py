@@ -4,7 +4,7 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 
 from clean.Extractor import Extractor
-from constants import file_name_results, airports, train_path
+from constants import FILE_NAME_RESULTS, AIRPORTS, TRAIN_PATH
 from path_generator_utility import path_generator, labels_path_generator, model_path_generator, \
     open_arena_submission_format_path_generator
 from prediction.UnseenDataRunner import UnseenDataRunner
@@ -13,7 +13,7 @@ from prediction.implementors.Predictor import Predictor
 
 
 def run_algorithm(airport_name):
-    data = pd.read_csv(path_generator(airport_name, file_name_results))
+    data = pd.read_csv(path_generator(airport_name, FILE_NAME_RESULTS))
 
     x_train, x_test, y_train, y_test = train_test_split(data.iloc[:, 4:], data.iloc[:, 3], test_size=0.2)
 
@@ -26,11 +26,11 @@ def run_algorithm(airport_name):
 
 
 def train():
-    for airport_name in airports:
+    for airport_name in AIRPORTS:
         labeled_data = pd.read_csv(labels_path_generator(airport_name), parse_dates=["timestamp"]) \
             .sort_values("timestamp")
         data = UnseenDataRunner(labeled_data, FeatureLoader()).run([airport_name])
-        data.to_csv(path_generator(airport_name, file_name_results), index=False)
+        data.to_csv(path_generator(airport_name, FILE_NAME_RESULTS), index=False)
         labels = data.iloc[:, 3]
         features = data.iloc[:, 4:]
         params = {
@@ -47,7 +47,7 @@ def train():
 def open_arena():
     unlabeled_data = pd.read_csv(open_arena_submission_format_path_generator(), parse_dates=["timestamp"]) \
         .sort_values("timestamp")
-    predictions = UnseenDataRunner(unlabeled_data, Predictor()).run(airports)
+    predictions = UnseenDataRunner(unlabeled_data, Predictor()).run(AIRPORTS)
 
     airport_submission_format = pd.read_csv(open_arena_submission_format_path_generator(), parse_dates=["timestamp"])
     predictions = (
@@ -57,12 +57,12 @@ def open_arena():
         ]
         .reset_index()
     )
-    predictions.to_csv(f"{train_path}result.csv", index=False)
+    predictions.to_csv(f"{TRAIN_PATH}result.csv", index=False)
 
 
 if __name__ == '__main__':
-    for airport in airports:
-        Extractor(f"{train_path}", airport).extract()
+    for airport in AIRPORTS:
+        Extractor(f"{TRAIN_PATH}", airport).extract()
     # train()
     # run_algorithm("KCLT")
     open_arena()

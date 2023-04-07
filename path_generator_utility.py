@@ -1,21 +1,21 @@
-from constants import train_path, file_name_labels, separator, model_path
+from constants import TRAIN_PATH, FILE_NAME_LABELS, SEPARATOR, MODEL_PATH
 
 
 def path_generator(airport, file_name):
-    return f"{train_path}{airport}{separator}{airport}_{file_name}.csv"
+    return f"{TRAIN_PATH}{airport}{SEPARATOR}{airport}_{file_name}.csv"
 
 
 def labels_path_generator(airport):
-    return f"{train_path}{airport}{separator}{file_name_labels}{airport}.csv"
+    return f"{TRAIN_PATH}{airport}{SEPARATOR}{FILE_NAME_LABELS}{airport}.csv"
 
 
 def open_arena_submission_format_path_generator():
-    return f"{train_path}submission_format.csv"
+    return f"{TRAIN_PATH}submission_format.csv"
 
 
 def types_path_generator(airport):
-    return f"{model_path}{airport}{separator}types.json"
+    return f"{MODEL_PATH}{airport}{SEPARATOR}types.json"
 
 
 def model_path_generator(airport):
-    return f"{model_path}{airport}{separator}xgboost.model"
+    return f"{MODEL_PATH}{airport}{SEPARATOR}xgboost.model"

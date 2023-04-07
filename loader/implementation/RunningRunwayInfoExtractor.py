@@ -2,7 +2,7 @@ import pandas as pd
 
 from model.Input import Input
 from clean.TypeContainer import TypeContainer
-from constants import runways_column_departure_runways, runways_column_arrival_runways
+from constants import RUNWAYS_COLUMN_DEPARTURE_RUNWAYS, RUNWAYS_COLUMN_ARRIVAL_RUNWAYS
 from loader.FeatureExtractor import FeatureExtractor
 
 
@@ -23,8 +23,8 @@ class RunningRunwayInfoExtractor(FeatureExtractor):
         return results
 
     def fill_runways_for_each_flight(self, x, now_running_runway):
-        departure_runways = now_running_runway[runways_column_departure_runways].split(', ')
-        arrival_runways = now_running_runway[runways_column_arrival_runways].split(', ')
+        departure_runways = now_running_runway[RUNWAYS_COLUMN_DEPARTURE_RUNWAYS].split(', ')
+        arrival_runways = now_running_runway[RUNWAYS_COLUMN_ARRIVAL_RUNWAYS].split(', ')
         for departure_runway in departure_runways:
             x[f"de_{departure_runway}"] = True
         for arrival_runway in arrival_runways:

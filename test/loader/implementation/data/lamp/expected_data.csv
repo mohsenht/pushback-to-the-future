@@ -1,0 +1,4 @@
+gufi,timestamp,airport,minutes_until_pushback,last_etd,temperature,wind_direction,wind_speed,wind_gust,cloud_ceiling,visibility,cl_BK,cl_CL,cl_FW,cl_OV,cl_SC,lp_N,lp_L,lp_M,lp_H,precip
+JIA5609.CLT.AVP.201211.1635.0027.TFM_TFDM,2020-11-08 05:30:00,KCLT,0,39,61,5,5,0,8.0,7,False,False,True,False,False,True,False,False,False,False
+JIA5053.CLT.XNA.201211.1430.0027.TFM_TFDM,2020-11-08 05:30:00,KCLT,0,109,60,5,5,0,8.0,7,False,False,False,False,True,True,False,False,False,False
+RPA4844.CLT.MCI.201211.1344.0042.TFM_TFDM,2020-11-08 05:30:00,KCLT,0,68,60,5,5,0,8.0,7,False,False,False,False,True,True,False,False,False,False

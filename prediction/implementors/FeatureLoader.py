@@ -9,7 +9,7 @@ from prediction.LoadRawData import LoadRawData
 from model.Model import Model
 from prediction.PredictInterface import PredictInterface
 from clean.TypeContainer import TypeContainer
-from constants import airports, separator
+from constants import AIRPORTS, SEPARATOR
 from path_generator_utility import types_path_generator
 
 
@@ -18,8 +18,8 @@ class FeatureLoader(PredictInterface):
     def load_model(self, solution_directory: Path) -> Any:
         airport_dict = {}
 
-        for airport in airports:
-            type_container = TypeContainer.from_file(f"{solution_directory}{separator}{types_path_generator(airport)}")
+        for airport in AIRPORTS:
+            type_container = TypeContainer.from_file(f"{solution_directory}{SEPARATOR}{types_path_generator(airport)}")
             airport_dict[airport] = AirportModel(model=None, type_container=type_container)
 
         return Model(airport_dict, FeatureExtractorContainer().data_gatherer)

@@ -1,10 +1,10 @@
 import os
 
-separator = os.path.sep
+SEPARATOR = os.path.sep
 
-number_of_processors = 10
+NUMBER_OF_PROCESSORS = 10
 
-# airports = [
+# AIRPORTS = [
 #     "KATL",
 #     "KCLT",
 #     "KDEN",
@@ -17,44 +17,60 @@ number_of_processors = 10
 #     "KSEA"
 # ]
 
-airports = [
+AIRPORTS = [
     "KCLT"
 ]
 
-file_name_config = "config"
-file_name_etd = "etd"
-file_name_first_position = "first_position"
-file_name_lamp = "lamp"
-file_name_mfs = "mfs"
-file_name_runways = "runways"
-file_name_standtimes = "standtimes"
-file_name_tbfm = "tbfm"
-file_name_tfm = "tfm"
-file_name_results = "results"
-file_name_labels = "train_labels_"
+FILE_NAME_CONFIG = "config"
+FILE_NAME_ETD = "etd"
+FILE_NAME_FIRST_POSITION = "first_position"
+FILE_NAME_LAMP = "lamp"
+FILE_NAME_MFS = "mfs"
+FILE_NAME_RUNWAYS = "runways"
+FILE_NAME_STANDTIMES = "standtimes"
+FILE_NAME_TBFM = "tbfm"
+FILE_NAME_TFM = "tfm"
+FILE_NAME_RESULTS = "results"
+FILE_NAME_LABELS = "train_labels_"
 
-mfs_column_aircraft_type = "aircraft_type"
-mfs_column_aircraft_engine_class = "aircraft_engine_class"
-mfs_column_major_carrier = "major_carrier"
-mfs_column_flight_type = "flight_type"
+COLUMN_NAME_TIMESTAMP = 'timestamp'
 
-runways_column_departure_runways = "departure_runways"
-runways_column_arrival_runways = "arrival_runways"
+MFS_COLUMN_AIRCRAFT_TYPE = "aircraft_type"
+MFS_COLUMN_AIRCRAFT_ENGINE_CLASS = "aircraft_engine_class"
+MFS_COLUMN_MAJOR_CARRIER = "major_carrier"
+MFS_COLUMN_FLIGHT_TYPE = "flight_type"
 
-model_path = f"data{separator}model{separator}"
+RUNWAYS_COLUMN_DEPARTURE_RUNWAYS = "departure_runways"
+RUNWAYS_COLUMN_ARRIVAL_RUNWAYS = "arrival_runways"
 
-# train_path = f"data{separator}train{separator}"
-train_path = f"data{separator}small_data{separator}"
+MODEL_PATH = f"data{SEPARATOR}model{SEPARATOR}"
 
-flight_id = "gufi"
+# TRAIN_PATH = f"data{separator}train{separator}"
+TRAIN_PATH = f"data{SEPARATOR}small_data{SEPARATOR}"
 
-cloud_category_BK = "BK"
-cloud_category_CL = "CL"
-cloud_category_FEW = "FEW"
-cloud_category_OV = "OV"
-cloud_category_SC = "SC"
+FLIGHT_ID = "gufi"
 
-lightning_prob_N = "N"
-lightning_prob_L = "L"
-lightning_prob_M = "M"
-lightning_prob_H = "H"
+CLOUD_CATEGORY_PREFIX = 'cl_'
+CLOUD_CATEGORY_BK = "BK"
+CLOUD_CATEGORY_CL = "CL"
+CLOUD_CATEGORY_FEW = "FW"
+CLOUD_CATEGORY_OV = "OV"
+CLOUD_CATEGORY_SC = "SC"
+
+LIGHTNING_PROB_CATEGORY_PREFIX = 'lp_'
+LIGHTNING_PROB_CATEGORY_N = "N"
+LIGHTNING_PROB_CATEGORY_L = "L"
+LIGHTNING_PROB_CATEGORY_M = "M"
+LIGHTNING_PROB_CATEGORY_H = "H"
+
+LAMP_COLUMN_TIMESTAMP = COLUMN_NAME_TIMESTAMP
+LAMP_COLUMN_FORECAST_TIMESTAMP = 'forecast_timestamp'
+LAMP_COLUMN_TEMPERATURE = 'temperature'
+LAMP_COLUMN_WIND_DIRECTION = 'wind_direction'
+LAMP_COLUMN_WIND_SPEED = 'wind_speed'
+LAMP_COLUMN_WIND_GUST = 'wind_gust'
+LAMP_COLUMN_CLOUD_CEILING = 'cloud_ceiling'
+LAMP_COLUMN_VISIBILITY = 'visibility'
+LAMP_COLUMN_CLOUD = 'cloud'
+LAMP_COLUMN_LIGHTNING_PROB = 'lightning_prob'
+LAMP_COLUMN_PRECIP = 'precip'

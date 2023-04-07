@@ -10,17 +10,17 @@ from loader.FeatureExtractorContainer import FeatureExtractorContainer
 from model.Input import Input
 from model.Model import Model
 from clean.TypeContainer import TypeContainer
-from constants import airports, separator
+from constants import AIRPORTS, SEPARATOR
 from path_generator_utility import model_path_generator, types_path_generator
 
 
 def load_model(solution_directory: Path) -> Any:
     airport_dict = {}
 
-    for airport in airports:
+    for airport in AIRPORTS:
         xgboost_model = xgb.XGBRegressor()
-        xgboost_model.load_model(f"{solution_directory}{separator}{model_path_generator(airport)}")
-        type_container = TypeContainer.from_file(f"{solution_directory}{separator}{types_path_generator(airport)}")
+        xgboost_model.load_model(f"{solution_directory}{SEPARATOR}{model_path_generator(airport)}")
+        type_container = TypeContainer.from_file(f"{solution_directory}{SEPARATOR}{types_path_generator(airport)}")
         airport_dict[airport] = AirportModel(xgboost_model, type_container)
 
     return Model(airport_dict, FeatureExtractorContainer().data_gatherer)

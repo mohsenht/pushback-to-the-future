@@ -6,7 +6,7 @@ import pandas as pd
 
 from prediction.LoadRawData import LoadRawData
 from prediction.PredictInterface import PredictInterface
-from constants import number_of_processors
+from constants import NUMBER_OF_PROCESSORS
 
 
 class UnseenDataRunner:
@@ -26,7 +26,7 @@ class UnseenDataRunner:
                 ]
             timestamps = pd.to_datetime(airport_submission_format.timestamp.unique())
 
-            pool = mp.Pool(processes=number_of_processors)
+            pool = mp.Pool(processes=NUMBER_OF_PROCESSORS)
             results = pool.starmap(self.predict_interface.predict,
                                    [(ts, airport_submission_format, raw_data, airport, model) for ts in timestamps])
             pool.close()

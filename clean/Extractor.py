@@ -1,8 +1,8 @@
 from clean.TypeContainer import TypeContainer
 from clean.TypeExtractor import TypeExtractor
-from constants import file_name_mfs, file_name_config, runways_column_departure_runways, \
-    runways_column_arrival_runways, mfs_column_aircraft_type, mfs_column_aircraft_engine_class, \
-    mfs_column_major_carrier, mfs_column_flight_type
+from constants import FILE_NAME_MFS, FILE_NAME_CONFIG, RUNWAYS_COLUMN_DEPARTURE_RUNWAYS, \
+    RUNWAYS_COLUMN_ARRIVAL_RUNWAYS, MFS_COLUMN_AIRCRAFT_TYPE, MFS_COLUMN_AIRCRAFT_ENGINE_CLASS, \
+    MFS_COLUMN_MAJOR_CARRIER, MFS_COLUMN_FLIGHT_TYPE
 from path_generator_utility import types_path_generator
 
 
@@ -13,10 +13,10 @@ class Extractor:
         self.airport_name = airport_name
 
     def extract_runways(self):
-        departure_runways = TypeExtractor(self.airport_name, self.file_path, file_name_config,
-                                          runways_column_departure_runways).extract_types()
-        arrival_runways = TypeExtractor(self.airport_name, self.file_path, file_name_config,
-                                        runways_column_arrival_runways).extract_types()
+        departure_runways = TypeExtractor(self.airport_name, self.file_path, FILE_NAME_CONFIG,
+                                          RUNWAYS_COLUMN_DEPARTURE_RUNWAYS).extract_types()
+        arrival_runways = TypeExtractor(self.airport_name, self.file_path, FILE_NAME_CONFIG,
+                                        RUNWAYS_COLUMN_ARRIVAL_RUNWAYS).extract_types()
         arrival_runways.extend(departure_runways)
         runways = set(arrival_runways)
         new_set = set()
@@ -29,13 +29,13 @@ class Extractor:
     def extract(self):
         container = TypeContainer(
             TypeExtractor(
-                self.airport_name, self.file_path, file_name_mfs, mfs_column_aircraft_type).extract_types(),
+                self.airport_name, self.file_path, FILE_NAME_MFS, MFS_COLUMN_AIRCRAFT_TYPE).extract_types(),
             TypeExtractor(
-                self.airport_name, self.file_path, file_name_mfs, mfs_column_aircraft_engine_class).extract_types(),
+                self.airport_name, self.file_path, FILE_NAME_MFS, MFS_COLUMN_AIRCRAFT_ENGINE_CLASS).extract_types(),
             TypeExtractor(
-                self.airport_name, self.file_path, file_name_mfs, mfs_column_major_carrier).extract_types(),
+                self.airport_name, self.file_path, FILE_NAME_MFS, MFS_COLUMN_MAJOR_CARRIER).extract_types(),
             TypeExtractor(
-                self.airport_name, self.file_path, file_name_mfs, mfs_column_flight_type).extract_types(),
+                self.airport_name, self.file_path, FILE_NAME_MFS, MFS_COLUMN_FLIGHT_TYPE).extract_types(),
             self.extract_runways()
         )
 

@@ -4,7 +4,7 @@ import pandas as pd
 
 from model.Input import Input
 from clean.TypeContainer import TypeContainer
-from constants import flight_id
+from constants import FLIGHT_ID
 from loader.FeatureExtractor import FeatureExtractor
 
 
@@ -15,7 +15,7 @@ class BusyETDExtractor(FeatureExtractor):
                   data: pd.DataFrame,
                   input_data: Input,
                   type_container: TypeContainer) -> pd.DataFrame:
-        latest_now_etd = input_data.etd.groupby(flight_id).last()
+        latest_now_etd = input_data.etd.groupby(FLIGHT_ID).last()
         latest_now_etd = latest_now_etd.sort_values("departure_runway_estimated_time")
         results = data.apply(self.calculate_how_busy_is_departure, args=(latest_now_etd, now), axis=1)
         return results
