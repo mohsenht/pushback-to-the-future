@@ -51,7 +51,7 @@ class TestLastWeatherLoader(TestCase):
     def test_data_is_empty_but_last_weather_has_data(self):
         now = pd.Timestamp('2020-11-08 05:30:00')
         lamp = pd.read_csv(
-            f"data{SEPARATOR}lamp{SEPARATOR}lamp.csv",
+            f"data{SEPARATOR}weather{SEPARATOR}lamp.csv",
             parse_dates=["timestamp"]
         ).sort_values("timestamp")
         input_data = Input(
@@ -76,11 +76,11 @@ class TestLastWeatherLoader(TestCase):
     def test_data_and_weather_loader(self):
         now = pd.Timestamp('2020-11-08 05:30:00')
         lamp = pd.read_csv(
-            f"data{SEPARATOR}lamp{SEPARATOR}lamp.csv",
+            f"data{SEPARATOR}weather{SEPARATOR}lamp.csv",
             parse_dates=[LAMP_COLUMN_FORECAST_TIMESTAMP, "timestamp"]
         ).sort_values("timestamp")
         data = pd.read_csv(
-            f"data{SEPARATOR}lamp{SEPARATOR}data.csv",
+            f"data{SEPARATOR}weather{SEPARATOR}data.csv",
             parse_dates=["timestamp"]
         ).sort_values("timestamp")
         input_data = Input(
@@ -99,7 +99,7 @@ class TestLastWeatherLoader(TestCase):
         actual_loaded_data = LastWeatherExtractor().load_data(now, data, input_data, type_container)
 
         expected_loaded_data = pd.read_csv(
-            f"data{SEPARATOR}lamp{SEPARATOR}expected_data.csv",
+            f"data{SEPARATOR}weather{SEPARATOR}expected_data.csv",
             parse_dates=["timestamp"]
         ).sort_values("timestamp")
 
