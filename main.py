@@ -4,7 +4,8 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 
 from clean.Extractor import Extractor
-from constants import FILE_NAME_RESULTS, AIRPORTS, TRAIN_PATH
+from constants import FILE_NAME_RESULTS, AIRPORTS, TRAIN_PATH, COLUMN_NAME_TIMESTAMP, SUBMISSION_FORMAT_AIRPORT, \
+    SUBMISSION_FORMAT_FLIGHT_ID
 from path_generator_utility import path_generator, labels_path_generator, model_path_generator, \
     open_arena_submission_format_path_generator
 from prediction.UnseenDataRunner import UnseenDataRunner
@@ -27,8 +28,8 @@ def run_algorithm(airport_name):
 
 def train():
     for airport_name in AIRPORTS:
-        labeled_data = pd.read_csv(labels_path_generator(airport_name), parse_dates=["timestamp"]) \
-            .sort_values("timestamp")
+        labeled_data = pd.read_csv(labels_path_generator(airport_name), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
+            .sort_values(COLUMN_NAME_TIMESTAMP)
         data = UnseenDataRunner(labeled_data, FeatureLoader()).run([airport_name])
         data.to_csv(path_generator(airport_name, FILE_NAME_RESULTS), index=False)
         labels = data.iloc[:, 3]
@@ -45,15 +46,24 @@ def train():
 
 
 def open_arena():
-    unlabeled_data = pd.read_csv(open_arena_submission_format_path_generator(), parse_dates=["timestamp"]) \
-        .sort_values("timestamp")
+    unlabeled_data = pd.read_csv(open_arena_submission_format_path_generator(), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
+        .sort_values(COLUMN_NAME_TIMESTAMP)
     predictions = UnseenDataRunner(unlabeled_data, Predictor()).run(AIRPORTS)
 
-    airport_submission_format = pd.read_csv(open_arena_submission_format_path_generator(), parse_dates=["timestamp"])
+    airport_submission_format = pd.read_csv(open_arena_submission_format_path_generator(),
+                                            parse_dates=[COLUMN_NAME_TIMESTAMP])
     predictions = (
-        predictions.set_index(["gufi", "timestamp", "airport"])
+        predictions.set_index([
+            SUBMISSION_FORMAT_FLIGHT_ID,
+            COLUMN_NAME_TIMESTAMP,
+            SUBMISSION_FORMAT_AIRPORT
+        ])
         .loc[
-            airport_submission_format.set_index(["gufi", "timestamp", "airport"]).index
+            airport_submission_format.set_index([
+                SUBMISSION_FORMAT_FLIGHT_ID,
+                COLUMN_NAME_TIMESTAMP,
+                SUBMISSION_FORMAT_AIRPORT
+            ]).index
         ]
         .reset_index()
     )
@@ -63,6 +73,6 @@ def open_arena():
 if __name__ == '__main__':
     for airport in AIRPORTS:
         Extractor(f"{TRAIN_PATH}", airport).extract()
-    # train()
+    train()
     # run_algorithm("KCLT")
     open_arena()

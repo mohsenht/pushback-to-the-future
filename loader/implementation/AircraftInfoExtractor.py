@@ -29,7 +29,7 @@ class AircraftInfoExtractor(FeatureExtractor):
     def fill_mfs_for_each_flight(self, x, filtered_mfs):
         mfs_dataframe = filtered_mfs.loc[filtered_mfs.gufi == x.gufi]
         if mfs_dataframe.empty:
-            return
+            return x
         mfs = mfs_dataframe.iloc[0]
         aircraft_type = f"a_{mfs[MFS_COLUMN_AIRCRAFT_TYPE]}"
         aircraft_engine_class = f"e_{mfs[MFS_COLUMN_AIRCRAFT_ENGINE_CLASS]}"

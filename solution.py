@@ -10,7 +10,8 @@ from loader.FeatureExtractorContainer import FeatureExtractorContainer
 from model.Input import Input
 from model.Model import Model
 from clean.TypeContainer import TypeContainer
-from constants import AIRPORTS, SEPARATOR
+from constants import AIRPORTS, SEPARATOR, SUBMISSION_FORMAT_MINUTES_UNTIL_PUSHBACK, RUNWAYS_COLUMN_TIMESTAMP, \
+    ETD_COLUMN_TIMESTAMP, LAMP_COLUMN_TIMESTAMP, STANDTIMES_COLUMN_TIMESTAMP, CONFIG_COLUMN_TIMESTAMP
 from path_generator_utility import model_path_generator, types_path_generator
 
 
@@ -42,14 +43,14 @@ def predict(
         model: Any,
         solution_directory: Path,
 ) -> pd.DataFrame:
-    input = Input(
-        config,
-        etd,
+    input_data = Input(
+        config.sort_values(CONFIG_COLUMN_TIMESTAMP),
+        etd.sort_values(ETD_COLUMN_TIMESTAMP),
         first_position,
-        lamp,
+        lamp.sort_values(LAMP_COLUMN_TIMESTAMP),
         mfs,
-        runways,
-        standtimes,
+        runways.sort_values(RUNWAYS_COLUMN_TIMESTAMP),
+        standtimes.sort_values(STANDTIMES_COLUMN_TIMESTAMP),
         tbfm,
         tfm,
     )
@@ -57,11 +58,11 @@ def predict(
     data = model.data_gatherer.load_features(
         prediction_time,
         partial_submission_format,
-        input,
+        input_data,
         model.airport_dict[airport].type_container
     )
     features = data.iloc[:, 4:]
     y_pred = model.airport_dict[airport].model.predict(features)
 
-    prediction["minutes_until_pushback"] = np.maximum(y_pred.round(), 0).astype(int)
+    prediction[SUBMISSION_FORMAT_MINUTES_UNTIL_PUSHBACK] = np.maximum(y_pred.round(), 0).astype(int)
     return prediction

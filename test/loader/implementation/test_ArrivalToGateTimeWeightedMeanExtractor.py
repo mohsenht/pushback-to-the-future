@@ -3,7 +3,10 @@ from unittest import TestCase
 import pandas as pd
 
 from clean.TypeContainer import TypeContainer
-from constants import SEPARATOR, FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE
+from constants import SEPARATOR, FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE, \
+    RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME, STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME, \
+    COLUMN_NAME_TIMESTAMP
+from hyper_parameters import ARRIVAL_TO_GATE_WEIGHTED_MEAN_TIME_CONSTANT_FOR_EMPTY_ARRIVAL
 from loader.implementation.ArrivalToGateTimeWeightedMeanExtractor import ArrivalToGateTimeWeightedMeanExtractor
 from model.Input import Input
 from path_generator_utility import types_path_generator
@@ -16,16 +19,16 @@ class TestArrivalToGateTimeWeightedMeanExtractor(TestCase):
         now = pd.Timestamp('2020-11-08 05:30:00')
         data = pd.read_csv(
             f"data{SEPARATOR}ArrivalToGateTimeWeightedMeanExtractor{SEPARATOR}data.csv",
-            parse_dates=["timestamp"]
-        ).sort_values("timestamp")
+            parse_dates=[COLUMN_NAME_TIMESTAMP]
+        ).sort_values(COLUMN_NAME_TIMESTAMP)
         runways = pd.read_csv(
             f"data{SEPARATOR}ArrivalToGateTimeWeightedMeanExtractor{SEPARATOR}runways.csv",
-            parse_dates=["arrival_runway_actual_time", "timestamp"],
-        ).sort_values("timestamp")
+            parse_dates=[RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME, COLUMN_NAME_TIMESTAMP],
+        ).sort_values(COLUMN_NAME_TIMESTAMP)
         standtimes = pd.read_csv(
             f"data{SEPARATOR}ArrivalToGateTimeWeightedMeanExtractor{SEPARATOR}standtimes.csv",
-            parse_dates=["arrival_stand_actual_time", "timestamp"],
-        ).sort_values("timestamp")
+            parse_dates=[STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME, COLUMN_NAME_TIMESTAMP],
+        ).sort_values(COLUMN_NAME_TIMESTAMP)
         input_data = Input(
             config=pd.DataFrame(),
             etd=pd.DataFrame(),
@@ -42,6 +45,47 @@ class TestArrivalToGateTimeWeightedMeanExtractor(TestCase):
         loaded_data = ArrivalToGateTimeWeightedMeanExtractor().load_data(now, data, input_data,
                                                                          type_container)
 
-        assert not loaded_data.empty, "loaded_data is not empty"
+        assert not loaded_data.empty, "loaded_data is empty"
         assert hasattr(loaded_data, FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE), "loaded_data does not have column ''"
         assert loaded_data.iloc[-1][FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE] != 0
+
+    def test_load_data_without_any_arrival_to_gate_data(self):
+        now = pd.Timestamp('2020-11-08 05:30:00')
+        data = pd.read_csv(
+            f"data{SEPARATOR}ArrivalToGateTimeWeightedMeanExtractor{SEPARATOR}data.csv",
+            parse_dates=[COLUMN_NAME_TIMESTAMP]
+        ).sort_values(COLUMN_NAME_TIMESTAMP)
+        runways = pd.read_csv(
+            f"data{SEPARATOR}ArrivalToGateTimeWeightedMeanExtractor{SEPARATOR}one_item_runways.csv",
+            parse_dates=[RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME, COLUMN_NAME_TIMESTAMP],
+        ).sort_values(COLUMN_NAME_TIMESTAMP)
+        standtimes = pd.read_csv(
+            f"data{SEPARATOR}ArrivalToGateTimeWeightedMeanExtractor{SEPARATOR}one_item_standtimes.csv",
+            parse_dates=[STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME, COLUMN_NAME_TIMESTAMP],
+        ).sort_values(COLUMN_NAME_TIMESTAMP)
+
+        input_data = Input(
+            config=pd.DataFrame(),
+            etd=pd.DataFrame(),
+            first_position=pd.DataFrame(),
+            lamp=pd.DataFrame(),
+            mfs=pd.DataFrame(),
+            runways=runways,
+            standtimes=standtimes,
+            tbfm=pd.DataFrame(),
+            tfm=pd.DataFrame(),
+        )
+        type_container = TypeContainer.from_file(f"{PROJECT_PATH}{types_path_generator(AIRPORT)}")
+
+        loaded_data = ArrivalToGateTimeWeightedMeanExtractor().load_data(
+            now,
+            data,
+            input_data,
+            type_container
+        )
+
+        assert not loaded_data.empty, "loaded_data is not empty"
+        assert hasattr(loaded_data, FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE), "loaded_data does not have column ''"
+        assert loaded_data.iloc[-1][
+                   FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE
+               ] == ARRIVAL_TO_GATE_WEIGHTED_MEAN_TIME_CONSTANT_FOR_EMPTY_ARRIVAL

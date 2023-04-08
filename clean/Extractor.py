@@ -1,8 +1,8 @@
 from clean.TypeContainer import TypeContainer
 from clean.TypeExtractor import TypeExtractor
-from constants import FILE_NAME_MFS, FILE_NAME_CONFIG, RUNWAYS_COLUMN_DEPARTURE_RUNWAYS, \
-    RUNWAYS_COLUMN_ARRIVAL_RUNWAYS, MFS_COLUMN_AIRCRAFT_TYPE, MFS_COLUMN_AIRCRAFT_ENGINE_CLASS, \
-    MFS_COLUMN_MAJOR_CARRIER, MFS_COLUMN_FLIGHT_TYPE
+from constants import FILE_NAME_MFS, FILE_NAME_CONFIG, CONFIG_COLUMN_DEPARTURE_RUNWAYS, \
+    MFS_COLUMN_AIRCRAFT_TYPE, MFS_COLUMN_AIRCRAFT_ENGINE_CLASS, \
+    MFS_COLUMN_MAJOR_CARRIER, MFS_COLUMN_FLIGHT_TYPE, CONFIG_COLUMN_ARRIVAL_RUNWAYS
 from path_generator_utility import types_path_generator
 
 
@@ -14,9 +14,9 @@ class Extractor:
 
     def extract_runways(self):
         departure_runways = TypeExtractor(self.airport_name, self.file_path, FILE_NAME_CONFIG,
-                                          RUNWAYS_COLUMN_DEPARTURE_RUNWAYS).extract_types()
+                                          CONFIG_COLUMN_DEPARTURE_RUNWAYS).extract_types()
         arrival_runways = TypeExtractor(self.airport_name, self.file_path, FILE_NAME_CONFIG,
-                                        RUNWAYS_COLUMN_ARRIVAL_RUNWAYS).extract_types()
+                                        CONFIG_COLUMN_ARRIVAL_RUNWAYS).extract_types()
         arrival_runways.extend(departure_runways)
         runways = set(arrival_runways)
         new_set = set()
