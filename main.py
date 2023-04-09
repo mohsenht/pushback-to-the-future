@@ -25,9 +25,16 @@ def run_algorithm(airport_name):
     mae = mean_absolute_error(y_test, y_pred)
     print("MAE: %.2f" % mae)
 
+def data_loader():
+    data = pd.read_csv(open_arena_submission_format_path_generator(), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
+        .sort_values(COLUMN_NAME_TIMESTAMP)
+    data_features = UnseenDataRunner(data, FeatureLoader()).run(AIRPORTS)
+    data_features.to_csv(f"{TRAIN_PATH}result.csv", index=False)
+
 
 def train():
     for airport_name in AIRPORTS:
+        print("Loading data for airport: %s", airport_name)
         labeled_data = pd.read_csv(labels_path_generator(airport_name), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
             .sort_values(COLUMN_NAME_TIMESTAMP)
         data = UnseenDataRunner(labeled_data, FeatureLoader()).run([airport_name])
@@ -41,6 +48,7 @@ def train():
         }
 
         model = xgb.XGBRegressor(n_estimators=100, **params)
+        print("Training model for airport: %s", airport_name)
         model.fit(features, labels)
         model.save_model(model_path_generator(airport_name))
 
@@ -50,42 +58,29 @@ def open_arena():
         .sort_values(COLUMN_NAME_TIMESTAMP)
     predictions = UnseenDataRunner(unlabeled_data, Predictor()).run(AIRPORTS)
 
-    # airport_submission_format = pd.read_csv(open_arena_submission_format_path_generator(),
-    #                                         parse_dates=[COLUMN_NAME_TIMESTAMP])
-    # predictions = (
-    #     predictions.set_index([
-    #         SUBMISSION_FORMAT_FLIGHT_ID,
-    #         COLUMN_NAME_TIMESTAMP,
-    #         SUBMISSION_FORMAT_AIRPORT
-    #     ])
-    #     .loc[
-    #         airport_submission_format.set_index([
-    #             SUBMISSION_FORMAT_FLIGHT_ID,
-    #             COLUMN_NAME_TIMESTAMP,
-    #             SUBMISSION_FORMAT_AIRPORT
-    #         ]).index
-    #     ]
-    #     .reset_index()
-    # )
+    airport_submission_format = pd.read_csv(open_arena_submission_format_path_generator(),
+                                            parse_dates=[COLUMN_NAME_TIMESTAMP])
+    predictions = (
+        predictions.set_index([
+            SUBMISSION_FORMAT_FLIGHT_ID,
+            COLUMN_NAME_TIMESTAMP,
+            SUBMISSION_FORMAT_AIRPORT
+        ])
+        .loc[
+            airport_submission_format.set_index([
+                SUBMISSION_FORMAT_FLIGHT_ID,
+                COLUMN_NAME_TIMESTAMP,
+                SUBMISSION_FORMAT_AIRPORT
+            ]).index
+        ]
+        .reset_index()
+    )
     predictions.to_csv(f"{TRAIN_PATH}result.csv", index=False)
 
 
 if __name__ == '__main__':
-    for airport in AIRPORTS:
-        Extractor(f"{TRAIN_PATH}", airport).extract()
-    #    train()
-    # run_algorithm("KCLT")
-    # data = pd.read_csv(f"{TRAIN_PATH}KCLT{SEPARATOR}KCLT_results.csv")
-    # labels = data.iloc[:, 3]
-    # features = data.iloc[:, 4:]
-    # params = {
-    #     'objective': 'reg:squarederror',
-    #     'learning_rate': 0.1,
-    #     'max_depth': 5
-    # }
-    #
-    # model = xgb.XGBRegressor(n_estimators=100, **params)
-    # model.fit(features, labels)
-    # model.save_model(model_path_generator("KCLT"))
-
+    # for airport in AIRPORTS:
+    #     Extractor(f"{TRAIN_PATH}", airport).extract()
+    # train()
     open_arena()
+    # data_loader()

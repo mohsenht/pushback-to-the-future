@@ -17,8 +17,9 @@ class UnseenDataRunner:
 
     def run(self, airports) -> pd.DataFrame:
         model = self.predict_interface.load_model(Path(os.getcwd()))
-        result = pd.DataFrame()
+        results = []
         for airport in airports:
+            print(f"Loading airport features: {airport}")
             raw_data = LoadRawData(airport)
 
             airport_submission_format = self.unlabeled_data.loc[
@@ -27,12 +28,12 @@ class UnseenDataRunner:
             timestamps = pd.to_datetime(airport_submission_format.timestamp.unique())
 
             pool = mp.Pool(processes=NUMBER_OF_PROCESSORS)
-            results = pool.starmap(self.predict_interface.predict,
-                                   [(ts, airport_submission_format, raw_data, airport, model) for ts in timestamps])
+            results.append(pd.concat(pool.starmap(self.predict_interface.predict,
+                                   [(ts, airport_submission_format, raw_data, airport, model) for ts in timestamps]), axis=0, ignore_index=True))
             pool.close()
             pool.join()
 
-            result = pd.concat(results, ignore_index=True)
 
-        return result
+
+        return pd.concat(results, axis=0, ignore_index=True)
 

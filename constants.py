@@ -4,22 +4,26 @@ SEPARATOR = os.path.sep
 
 NUMBER_OF_PROCESSORS = 10
 
+AIRPORTS = [
+    "KATL",
+    "KCLT",
+    "KDEN",
+    "KDFW",
+    "KJFK",
+    "KMEM",
+    "KMIA",
+    "KORD",
+    "KPHX",
+    "KSEA"
+]
+
+
 # AIRPORTS = [
-#     "KATL",
 #     "KCLT",
-#     "KDEN",
-#     "KDFW",
-#     "KJFK",
-#     "KMEM",
-#     "KMIA",
-#     "KORD",
-#     "KPHX",
-#     "KSEA"
+#     "KATL",
 # ]
 
-AIRPORTS = [
-    "KCLT"
-]
+
 
 FILE_NAME_CONFIG = "config"
 FILE_NAME_ETD = "etd"
@@ -40,7 +44,7 @@ RUNWAYS_COLUMN_ARRIVAL_RUNWAYS = "arrival_runways"
 MODEL_PATH = f"data{SEPARATOR}model{SEPARATOR}"
 
 TRAIN_PATH = f"data{SEPARATOR}train{SEPARATOR}"
-# TRAIN_PATH = f"data{SEPARATOR}small_data{SEPARATOR}"
+#TRAIN_PATH = f"data{SEPARATOR}small_data{SEPARATOR}"
 
 FLIGHT_ID = "gufi"
 

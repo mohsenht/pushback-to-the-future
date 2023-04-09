@@ -73,7 +73,7 @@ class LastWeatherExtractor(FeatureExtractor):
         data[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_M}"] = weather[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_M}"]
         data[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_H}"] = weather[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_H}"]
 
-        data[LAMP_COLUMN_PRECIP] = weather[LAMP_COLUMN_PRECIP]
+        # data[LAMP_COLUMN_PRECIP] = weather[LAMP_COLUMN_PRECIP]
 
         data.drop(LastWeatherExtractor.DEPARTURE_TIME, axis=1, inplace=True)
         return data
