@@ -19,6 +19,7 @@ class LastETDExtractor(FeatureExtractor):
             how="left",
             on=FLIGHT_ID
         ).departure_runway_estimated_time
+        departure_runway_estimated_time.fillna(now, inplace=True)
         data["last_etd"] = (departure_runway_estimated_time - now).dt.total_seconds() / 60
         data["last_etd"] = data.last_etd.clip(lower=0).astype(int)
         return data
