@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-import pandas as pd
+import cudf
 
 from src.clean.TypeContainer import TypeContainer
 from src.constants import SEPARATOR, COLUMN_NAME_TIMESTAMP, MFS_COLUMN_FLIGHT_ID, MFS_COLUMN_AIRCRAFT_TYPE, \
@@ -14,8 +14,8 @@ from src.test.constants import PROJECT_PATH, AIRPORT
 class TestAircraftInfoLoader(TestCase):
 
     def test_load_data_with_empty_mfs(self):
-        now = pd.Timestamp('2020-11-08 05:30:00')
-        data = pd.read_csv(
+        now = cudf.Timestamp('2020-11-08 05:30:00')
+        data = cudf.read_csv(
             f"data{SEPARATOR}AircraftInfoExtractor{SEPARATOR}data.csv",
             parse_dates=[COLUMN_NAME_TIMESTAMP]
         ).sort_values(COLUMN_NAME_TIMESTAMP)
@@ -30,15 +30,15 @@ class TestAircraftInfoLoader(TestCase):
         ]
 
         input_data = Input(
-            config=pd.DataFrame(),
-            etd=pd.DataFrame(),
-            first_position=pd.DataFrame(),
-            lamp=pd.DataFrame(),
-            mfs=pd.DataFrame(columns=mfs_columns),
-            runways=pd.DataFrame(),
-            standtimes=pd.DataFrame(),
-            tbfm=pd.DataFrame(),
-            tfm=pd.DataFrame(),
+            config=cudf.DataFrame(),
+            etd=cudf.DataFrame(),
+            first_position=cudf.DataFrame(),
+            lamp=cudf.DataFrame(),
+            mfs=cudf.DataFrame(columns=mfs_columns),
+            runways=cudf.DataFrame(),
+            standtimes=cudf.DataFrame(),
+            tbfm=cudf.DataFrame(),
+            tfm=cudf.DataFrame(),
         )
         type_container = TypeContainer.from_file(f"{PROJECT_PATH}{types_path_generator(AIRPORT)}")
 
@@ -59,26 +59,26 @@ class TestAircraftInfoLoader(TestCase):
         assert all(col in loaded_data.columns for col in boolean_feature_names)
 
     def test_load_data_with_regular_input(self):
-        now = pd.Timestamp('2020-11-08 05:30:00')
-        data = pd.read_csv(
+        now = cudf.Timestamp('2020-11-08 05:30:00')
+        data = cudf.read_csv(
             f"data{SEPARATOR}AircraftInfoExtractor{SEPARATOR}data.csv",
             parse_dates=[COLUMN_NAME_TIMESTAMP]
         ).sort_values(COLUMN_NAME_TIMESTAMP)
 
-        mfs = pd.read_csv(
+        mfs = cudf.read_csv(
             f"data{SEPARATOR}AircraftInfoExtractor{SEPARATOR}mfs.csv"
         )
 
         input_data = Input(
-            config=pd.DataFrame(),
-            etd=pd.DataFrame(),
-            first_position=pd.DataFrame(),
-            lamp=pd.DataFrame(),
+            config=cudf.DataFrame(),
+            etd=cudf.DataFrame(),
+            first_position=cudf.DataFrame(),
+            lamp=cudf.DataFrame(),
             mfs=mfs,
-            runways=pd.DataFrame(),
-            standtimes=pd.DataFrame(),
-            tbfm=pd.DataFrame(),
-            tfm=pd.DataFrame(),
+            runways=cudf.DataFrame(),
+            standtimes=cudf.DataFrame(),
+            tbfm=cudf.DataFrame(),
+            tfm=cudf.DataFrame(),
         )
         type_container = TypeContainer.from_file(f"{PROJECT_PATH}{types_path_generator(AIRPORT)}")
 
@@ -95,7 +95,7 @@ class TestAircraftInfoLoader(TestCase):
         boolean_feature_names.extend(['f_' + s for s in type_container.flight_type])
         boolean_feature_names.extend(['m_' + s for s in type_container.major_carrier])
 
-        expected_loaded_data = pd.read_csv(
+        expected_loaded_data = cudf.read_csv(
             f"data{SEPARATOR}AircraftInfoExtractor{SEPARATOR}expected_data.csv",
             parse_dates=[COLUMN_NAME_TIMESTAMP]
         ).sort_values(COLUMN_NAME_TIMESTAMP)

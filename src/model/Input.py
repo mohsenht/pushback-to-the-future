@@ -1,17 +1,17 @@
-import pandas as pd
+import cudf
 
 class Input:
 
     def __init__(self,
-                 config: pd.DataFrame,
-                 etd: pd.DataFrame,
-                 first_position: pd.DataFrame,
-                 lamp: pd.DataFrame,
-                 mfs: pd.DataFrame,
-                 runways: pd.DataFrame,
-                 standtimes: pd.DataFrame,
-                 tbfm: pd.DataFrame,
-                 tfm: pd.DataFrame,
+                 config: cudf.DataFrame,
+                 etd: cudf.DataFrame,
+                 first_position: cudf.DataFrame,
+                 lamp: cudf.DataFrame,
+                 mfs: cudf.DataFrame,
+                 runways: cudf.DataFrame,
+                 standtimes: cudf.DataFrame,
+                 tbfm: cudf.DataFrame,
+                 tfm: cudf.DataFrame,
                  ):
         self.config = config
         self.etd = etd

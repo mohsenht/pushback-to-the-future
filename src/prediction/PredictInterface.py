@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
 
-import pandas as pd
+import cudf
 
 
 from src.model.Model import Model
@@ -18,8 +18,8 @@ class PredictInterface(ABC):
     @abstractmethod
     def predict(self,
                 now: pd.Timestamp,
-                data: pd.DataFrame,
+                data: cudf.DataFrame,
                 raw_data: LoadRawData,
                 airport: str,
-                model: Model) -> pd.DataFrame:
+                model: Model) -> cudf.DataFrame:
         pass

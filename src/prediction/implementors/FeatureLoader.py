@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any
 
-import pandas as pd
+import cudf
 
 from src.model.AirportModel import AirportModel
 from src.loader.FeatureExtractorContainer import FeatureExtractorContainer
@@ -26,10 +26,10 @@ class FeatureLoader(PredictInterface):
 
     def predict(self,
                 now: pd.Timestamp,
-                data: pd.DataFrame,
+                data: cudf.DataFrame,
                 raw_data: LoadRawData,
                 airport: str,
-                model: Model) -> pd.DataFrame:
+                model: Model) -> cudf.DataFrame:
         input_data = raw_data.get_input(now)
         return model.data_gatherer.load_features(
             now,

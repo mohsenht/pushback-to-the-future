@@ -1,6 +1,6 @@
 import time
 
-import pandas as pd
+import cudf
 import xgboost as xgb
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
@@ -15,7 +15,7 @@ from src.prediction.implementors.Predictor import Predictor
 
 
 def run_algorithm(airport_name):
-    data = pd.read_csv(path_generator(airport_name, FILE_NAME_RESULTS))
+    data = cudf.read_csv(path_generator(airport_name, FILE_NAME_RESULTS))
 
     x_train, x_test, y_train, y_test = train_test_split(data.iloc[:, 4:], data.iloc[:, 3], test_size=0.2)
 
@@ -27,7 +27,7 @@ def run_algorithm(airport_name):
     print("MAE: %.2f" % mae)
 
 def data_loader():
-    data = pd.read_csv(open_arena_submission_format_path_generator(), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
+    data = cudf.read_csv(open_arena_submission_format_path_generator(), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
         .sort_values(COLUMN_NAME_TIMESTAMP)
     data_features = UnseenDataRunner(data, FeatureLoader()).run(AIRPORTS)
     data_features.to_csv(f"{TRAIN_PATH}result.csv", index=False)
@@ -36,7 +36,7 @@ def data_loader():
 def train():
     for airport_name in AIRPORTS:
         print("Loading data for airport: %s", airport_name)
-        labeled_data = pd.read_csv(labels_path_generator(airport_name), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
+        labeled_data = cudf.read_csv(labels_path_generator(airport_name), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
             .sort_values(COLUMN_NAME_TIMESTAMP)
         data = UnseenDataRunner(labeled_data, FeatureLoader()).run([airport_name])
         data.to_csv(path_generator(airport_name, FILE_NAME_RESULTS), index=False)
@@ -55,11 +55,11 @@ def train():
 
 
 def open_arena():
-    unlabeled_data = pd.read_csv(open_arena_submission_format_path_generator(), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
+    unlabeled_data = cudf.read_csv(open_arena_submission_format_path_generator(), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
         .sort_values(COLUMN_NAME_TIMESTAMP)
     predictions = UnseenDataRunner(unlabeled_data, Predictor()).run(AIRPORTS)
 
-    airport_submission_format = pd.read_csv(open_arena_submission_format_path_generator(),
+    airport_submission_format = cudf.read_csv(open_arena_submission_format_path_generator(),
                                             parse_dates=[COLUMN_NAME_TIMESTAMP])
     predictions = (
         predictions.set_index([

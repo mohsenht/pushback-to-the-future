@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-import pandas as pd
+import cudf
 
 from src.clean.TypeContainer import TypeContainer
 from src.constants import SEPARATOR, LAMP_COLUMN_TEMPERATURE, LAMP_COLUMN_FORECAST_TIMESTAMP, \
@@ -17,7 +17,7 @@ from src.test.constants import AIRPORT, PROJECT_PATH
 class TestLastWeatherLoader(TestCase):
 
     def test_last_weather_when_data_and_input_are_empty(self):
-        now = pd.Timestamp.now()
+        now = cudf.Timestamp.now()
         lamp_columns = [
             LAMP_COLUMN_TIMESTAMP,
             LAMP_COLUMN_FORECAST_TIMESTAMP,
@@ -32,18 +32,18 @@ class TestLastWeatherLoader(TestCase):
             LAMP_COLUMN_PRECIP
         ]
         input_data = Input(
-            config=pd.DataFrame(),
-            etd=pd.DataFrame(),
-            first_position=pd.DataFrame(),
-            lamp=pd.DataFrame(columns=lamp_columns),
-            mfs=pd.DataFrame(),
-            runways=pd.DataFrame(),
-            standtimes=pd.DataFrame(),
-            tbfm=pd.DataFrame(),
-            tfm=pd.DataFrame(),
+            config=cudf.DataFrame(),
+            etd=cudf.DataFrame(),
+            first_position=cudf.DataFrame(),
+            lamp=cudf.DataFrame(columns=lamp_columns),
+            mfs=cudf.DataFrame(),
+            runways=cudf.DataFrame(),
+            standtimes=cudf.DataFrame(),
+            tbfm=cudf.DataFrame(),
+            tfm=cudf.DataFrame(),
         )
         data_columns = ['last_etd']
-        data = pd.DataFrame(columns=data_columns)
+        data = cudf.DataFrame(columns=data_columns)
         type_container = TypeContainer.from_file(f"{PROJECT_PATH}{types_path_generator(AIRPORT)}")
 
         loaded_data = LastWeatherExtractor().load_data(now, data, input_data, type_container)
@@ -51,24 +51,24 @@ class TestLastWeatherLoader(TestCase):
         assert loaded_data.empty, "loaded_data is not empty"
 
     def test_data_is_empty_but_last_weather_has_data(self):
-        now = pd.Timestamp('2020-11-08 05:30:00')
-        lamp = pd.read_csv(
+        now = cudf.Timestamp('2020-11-08 05:30:00')
+        lamp = cudf.read_csv(
             f"data{SEPARATOR}weather{SEPARATOR}lamp.csv",
             parse_dates=[COLUMN_NAME_TIMESTAMP]
         ).sort_values(COLUMN_NAME_TIMESTAMP)
         input_data = Input(
-            config=pd.DataFrame(),
-            etd=pd.DataFrame(),
-            first_position=pd.DataFrame(),
+            config=cudf.DataFrame(),
+            etd=cudf.DataFrame(),
+            first_position=cudf.DataFrame(),
             lamp=crop_data_in_30h(now, lamp),
-            mfs=pd.DataFrame(),
-            runways=pd.DataFrame(),
-            standtimes=pd.DataFrame(),
-            tbfm=pd.DataFrame(),
-            tfm=pd.DataFrame(),
+            mfs=cudf.DataFrame(),
+            runways=cudf.DataFrame(),
+            standtimes=cudf.DataFrame(),
+            tbfm=cudf.DataFrame(),
+            tfm=cudf.DataFrame(),
         )
         data_columns = ['last_etd']
-        data = pd.DataFrame(columns=data_columns)
+        data = cudf.DataFrame(columns=data_columns)
         type_container = TypeContainer.from_file(f"{PROJECT_PATH}{types_path_generator(AIRPORT)}")
 
         loaded_data = LastWeatherExtractor().load_data(now, data, input_data, type_container)
@@ -76,31 +76,31 @@ class TestLastWeatherLoader(TestCase):
         assert loaded_data.empty, "loaded_data is not empty"
 
     def test_data_and_weather_loader(self):
-        now = pd.Timestamp('2020-11-08 05:30:00')
-        lamp = pd.read_csv(
+        now = cudf.Timestamp('2020-11-08 05:30:00')
+        lamp = cudf.read_csv(
             f"data{SEPARATOR}weather{SEPARATOR}lamp.csv",
             parse_dates=[COLUMN_NAME_TIMESTAMP]
         ).sort_values(COLUMN_NAME_TIMESTAMP)
-        data = pd.read_csv(
+        data = cudf.read_csv(
             f"data{SEPARATOR}weather{SEPARATOR}data.csv",
             parse_dates=[COLUMN_NAME_TIMESTAMP]
         ).sort_values(COLUMN_NAME_TIMESTAMP)
         input_data = Input(
-            config=pd.DataFrame(),
-            etd=pd.DataFrame(),
-            first_position=pd.DataFrame(),
+            config=cudf.DataFrame(),
+            etd=cudf.DataFrame(),
+            first_position=cudf.DataFrame(),
             lamp=crop_data_in_30h(now, lamp),
-            mfs=pd.DataFrame(),
-            runways=pd.DataFrame(),
-            standtimes=pd.DataFrame(),
-            tbfm=pd.DataFrame(),
-            tfm=pd.DataFrame(),
+            mfs=cudf.DataFrame(),
+            runways=cudf.DataFrame(),
+            standtimes=cudf.DataFrame(),
+            tbfm=cudf.DataFrame(),
+            tfm=cudf.DataFrame(),
         )
         type_container = TypeContainer.from_file(f"{PROJECT_PATH}{types_path_generator(AIRPORT)}")
 
         actual_loaded_data = LastWeatherExtractor().load_data(now, data, input_data, type_container)
 
-        expected_loaded_data = pd.read_csv(
+        expected_loaded_data = cudf.read_csv(
             f"data{SEPARATOR}weather{SEPARATOR}expected_data.csv",
             parse_dates=[COLUMN_NAME_TIMESTAMP]
         ).sort_values(COLUMN_NAME_TIMESTAMP)

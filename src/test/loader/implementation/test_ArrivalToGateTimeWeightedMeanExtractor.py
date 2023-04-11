@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-import pandas as pd
+import cudf
 
 from src.clean.TypeContainer import TypeContainer
 from src.constants import SEPARATOR, FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE, \
@@ -16,29 +16,29 @@ from src.test.constants import PROJECT_PATH, AIRPORT
 
 class TestArrivalToGateTimeWeightedMeanExtractor(TestCase):
     def test_load_data(self):
-        now = pd.Timestamp('2020-11-08 05:30:00')
-        data = pd.read_csv(
+        now = cudf.Timestamp('2020-11-08 05:30:00')
+        data = cudf.read_csv(
             f"data{SEPARATOR}ArrivalToGateTimeWeightedMeanExtractor{SEPARATOR}data.csv",
             parse_dates=[COLUMN_NAME_TIMESTAMP]
         ).sort_values(COLUMN_NAME_TIMESTAMP)
-        runways = pd.read_csv(
+        runways = cudf.read_csv(
             f"data{SEPARATOR}ArrivalToGateTimeWeightedMeanExtractor{SEPARATOR}runways.csv",
             parse_dates=[RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME, COLUMN_NAME_TIMESTAMP],
         ).sort_values(COLUMN_NAME_TIMESTAMP)
-        standtimes = pd.read_csv(
+        standtimes = cudf.read_csv(
             f"data{SEPARATOR}ArrivalToGateTimeWeightedMeanExtractor{SEPARATOR}standtimes.csv",
             parse_dates=[STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME, COLUMN_NAME_TIMESTAMP],
         ).sort_values(COLUMN_NAME_TIMESTAMP)
         input_data = Input(
-            config=pd.DataFrame(),
-            etd=pd.DataFrame(),
-            first_position=pd.DataFrame(),
-            lamp=pd.DataFrame(),
-            mfs=pd.DataFrame(),
+            config=cudf.DataFrame(),
+            etd=cudf.DataFrame(),
+            first_position=cudf.DataFrame(),
+            lamp=cudf.DataFrame(),
+            mfs=cudf.DataFrame(),
             runways=crop_data_in_30h(now, runways),
             standtimes=crop_data_in_30h(now, standtimes),
-            tbfm=pd.DataFrame(),
-            tfm=pd.DataFrame(),
+            tbfm=cudf.DataFrame(),
+            tfm=cudf.DataFrame(),
         )
         type_container = TypeContainer.from_file(f"{PROJECT_PATH}{types_path_generator(AIRPORT)}")
 
@@ -50,30 +50,30 @@ class TestArrivalToGateTimeWeightedMeanExtractor(TestCase):
         assert loaded_data.iloc[-1][FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE] != 0
 
     def test_load_data_without_any_arrival_to_gate_data(self):
-        now = pd.Timestamp('2020-11-08 05:30:00')
-        data = pd.read_csv(
+        now = cudf.Timestamp('2020-11-08 05:30:00')
+        data = cudf.read_csv(
             f"data{SEPARATOR}ArrivalToGateTimeWeightedMeanExtractor{SEPARATOR}data.csv",
             parse_dates=[COLUMN_NAME_TIMESTAMP]
         ).sort_values(COLUMN_NAME_TIMESTAMP)
-        runways = pd.read_csv(
+        runways = cudf.read_csv(
             f"data{SEPARATOR}ArrivalToGateTimeWeightedMeanExtractor{SEPARATOR}one_item_runways.csv",
             parse_dates=[RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME, COLUMN_NAME_TIMESTAMP],
         ).sort_values(COLUMN_NAME_TIMESTAMP)
-        standtimes = pd.read_csv(
+        standtimes = cudf.read_csv(
             f"data{SEPARATOR}ArrivalToGateTimeWeightedMeanExtractor{SEPARATOR}one_item_standtimes.csv",
             parse_dates=[STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME, COLUMN_NAME_TIMESTAMP],
         ).sort_values(COLUMN_NAME_TIMESTAMP)
 
         input_data = Input(
-            config=pd.DataFrame(),
-            etd=pd.DataFrame(),
-            first_position=pd.DataFrame(),
-            lamp=pd.DataFrame(),
-            mfs=pd.DataFrame(),
+            config=cudf.DataFrame(),
+            etd=cudf.DataFrame(),
+            first_position=cudf.DataFrame(),
+            lamp=cudf.DataFrame(),
+            mfs=cudf.DataFrame(),
             runways=runways,
             standtimes=standtimes,
-            tbfm=pd.DataFrame(),
-            tfm=pd.DataFrame(),
+            tbfm=cudf.DataFrame(),
+            tfm=cudf.DataFrame(),
         )
         type_container = TypeContainer.from_file(f"{PROJECT_PATH}{types_path_generator(AIRPORT)}")
 

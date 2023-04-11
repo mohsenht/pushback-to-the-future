@@ -1,4 +1,4 @@
-import pandas as pd
+import cudf
 
 from src.hyper_parameters import ARRIVAL_TO_GATE_WEIGHTED_MEAN_TIME_CONSTANT_FOR_EMPTY_ARRIVAL
 from src.model.Input import Input
@@ -11,11 +11,11 @@ from src.loader.FeatureExtractor import FeatureExtractor
 class ArrivalToGateTimeWeightedMeanExtractor(FeatureExtractor):
 
     def load_data(self,
-                  now: pd.Timestamp,
-                  data: pd.DataFrame,
+                  now: Timestamp,
+                  data: cudf.DataFrame,
                   input_data: Input,
-                  type_container: TypeContainer) -> pd.DataFrame:
-        merged_standtimes_runways = pd.merge(input_data.standtimes, input_data.runways, on=FLIGHT_ID)
+                  type_container: TypeContainer) -> cudf.DataFrame:
+        merged_standtimes_runways = cudf.merge(input_data.standtimes, input_data.runways, on=FLIGHT_ID)
         merged_standtimes_runways = merged_standtimes_runways.dropna(subset=[STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME, RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME])
         merged_standtimes_runways['diff_stand_runway'] = (
                 (merged_standtimes_runways[STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME]
@@ -23,7 +23,7 @@ class ArrivalToGateTimeWeightedMeanExtractor(FeatureExtractor):
                  ).dt.total_seconds() / 60)
         merged_standtimes_runways = merged_standtimes_runways.sort_values(STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME)
         diff_stand_runway = merged_standtimes_runways[merged_standtimes_runways['diff_stand_runway'] >= 0]
-        ewm = pd.Series(diff_stand_runway['diff_stand_runway']).ewm(span=4).mean()
+        ewm = cudf.Series(diff_stand_runway['diff_stand_runway']).ewm(span=4).mean()
         if ewm.empty:
             weighted_mean = ARRIVAL_TO_GATE_WEIGHTED_MEAN_TIME_CONSTANT_FOR_EMPTY_ARRIVAL
         else:

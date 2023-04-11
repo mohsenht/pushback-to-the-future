@@ -1,4 +1,4 @@
-import pandas as pd
+import cudf
 
 from src.model.Input import Input
 from src.constants import FLIGHT_ID, RUNWAYS_COLUMN_DEPARTURE_RUNWAY_ACTUAL, ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME
@@ -13,15 +13,15 @@ class RunwayETDMeanExtractor(FeatureExtractor):
 
     def load_data(self,
                   now: pd.Timestamp,
-                  data: pd.DataFrame,
+                  data: cudf.DataFrame,
                   input_data: Input,
-                  type_container: TypeContainer) -> pd.DataFrame:
+                  type_container: TypeContainer) -> cudf.DataFrame:
         now_runways = input_data.runways.dropna(subset=[RUNWAYS_COLUMN_DEPARTURE_RUNWAY_ACTUAL])
         now_etd = input_data.etd[input_data.etd[FLIGHT_ID].isin(now_runways[FLIGHT_ID])]
         grouped_now_etd = now_etd.groupby(FLIGHT_ID).last()
         results = grouped_now_etd.apply(self.find_etd_for_each_gufi, arg1=now_runways)
 
-        df = pd.DataFrame(results.to_list(), columns=[FLIGHT_ID, 'etd_new'])
+        df = cudf.DataFrame(results.to_list(), columns=[FLIGHT_ID, 'etd_new'])
         merged_df = now_runways.merge(df[[FLIGHT_ID, 'etd_new']], on=FLIGHT_ID, how='left')
 
         data['etd_new'] = merged_df.dropna(subset=['etd_new'])['etd_new'].mean()

@@ -1,4 +1,4 @@
-import pandas as pd
+import cudf
 
 from src.constants import CONFIG_COLUMN_ARRIVAL_RUNWAYS, CONFIG_COLUMN_DEPARTURE_RUNWAYS
 from src.model.Input import Input
@@ -10,14 +10,14 @@ class RunningRunwayInfoExtractor(FeatureExtractor):
 
     def load_data(self,
                   now: pd.Timestamp,
-                  data: pd.DataFrame,
+                  data: cudf.DataFrame,
                   input_data: Input,
-                  type_container: TypeContainer) -> pd.DataFrame:
+                  type_container: TypeContainer) -> cudf.DataFrame:
         boolean_feature_names = []
         boolean_feature_names.extend(['de_' + s for s in type_container.runways_names])
         boolean_feature_names.extend(['ar_' + s for s in type_container.runways_names])
-        new_data = pd.DataFrame(False, index=data.index, columns=boolean_feature_names)
-        new_data = pd.concat([data, new_data], axis=1)
+        new_data = cudf.DataFrame(False, index=data.index, columns=boolean_feature_names)
+        new_data = cudf.concat([data, new_data], axis=1)
         if input_data.config.empty:
             return new_data
         now_running_runway = input_data.config.iloc[-1]

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-import pandas as pd
+import cudf
 
 from src.clean.TypeContainer import TypeContainer
 from src.constants import SEPARATOR, COLUMN_NAME_TIMESTAMP, ETD_COLUMN_TIMESTAMP, \
@@ -14,16 +14,16 @@ from src.test.constants import PROJECT_PATH, AIRPORT
 class TestLastETDExtractor(TestCase):
 
     def test_load_data_with_empty_edt(self):
-        now = pd.Timestamp('2020-11-08 05:30:00')
+        now = cudf.Timestamp('2020-11-08 05:30:00')
 
-        data = pd.read_csv(
+        data = cudf.read_csv(
             f"data{SEPARATOR}LastETDExtractor{SEPARATOR}data.csv",
             parse_dates=[
                 COLUMN_NAME_TIMESTAMP
             ]
         ).sort_values(COLUMN_NAME_TIMESTAMP)
 
-        etd = pd.read_csv(
+        etd = cudf.read_csv(
             f"data{SEPARATOR}LastETDExtractor{SEPARATOR}empty_etd.csv",
             parse_dates=[
                 ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME,
@@ -32,15 +32,15 @@ class TestLastETDExtractor(TestCase):
         ).sort_values(ETD_COLUMN_TIMESTAMP)
 
         input_data = Input(
-            config=pd.DataFrame(),
+            config=cudf.DataFrame(),
             etd=etd,
-            first_position=pd.DataFrame(),
-            lamp=pd.DataFrame(),
-            mfs=pd.DataFrame(),
-            runways=pd.DataFrame(),
-            standtimes=pd.DataFrame(),
-            tbfm=pd.DataFrame(),
-            tfm=pd.DataFrame(),
+            first_position=cudf.DataFrame(),
+            lamp=cudf.DataFrame(),
+            mfs=cudf.DataFrame(),
+            runways=cudf.DataFrame(),
+            standtimes=cudf.DataFrame(),
+            tbfm=cudf.DataFrame(),
+            tfm=cudf.DataFrame(),
         )
         type_container = TypeContainer.from_file(f"{PROJECT_PATH}{types_path_generator(AIRPORT)}")
 
@@ -54,13 +54,13 @@ class TestLastETDExtractor(TestCase):
         assert not loaded_data.empty, "loaded_data is empty"
 
     def test_load_data_with_regular_input(self):
-        now = pd.Timestamp('2020-11-08 05:30:00')
-        data = pd.read_csv(
+        now = cudf.Timestamp('2020-11-08 05:30:00')
+        data = cudf.read_csv(
             f"data{SEPARATOR}LastETDExtractor{SEPARATOR}data.csv",
             parse_dates=[COLUMN_NAME_TIMESTAMP]
         ).sort_values(COLUMN_NAME_TIMESTAMP)
 
-        etd = pd.read_csv(
+        etd = cudf.read_csv(
             f"data{SEPARATOR}LastETDExtractor{SEPARATOR}etd.csv",
             parse_dates=[
                 ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME,
@@ -69,15 +69,15 @@ class TestLastETDExtractor(TestCase):
         ).sort_values(ETD_COLUMN_TIMESTAMP)
 
         input_data = Input(
-            config=pd.DataFrame(),
+            config=cudf.DataFrame(),
             etd=etd,
-            first_position=pd.DataFrame(),
-            lamp=pd.DataFrame(),
-            mfs=pd.DataFrame(),
-            runways=pd.DataFrame(),
-            standtimes=pd.DataFrame(),
-            tbfm=pd.DataFrame(),
-            tfm=pd.DataFrame(),
+            first_position=cudf.DataFrame(),
+            lamp=cudf.DataFrame(),
+            mfs=cudf.DataFrame(),
+            runways=cudf.DataFrame(),
+            standtimes=cudf.DataFrame(),
+            tbfm=cudf.DataFrame(),
+            tfm=cudf.DataFrame(),
         )
         type_container = TypeContainer.from_file(f"{PROJECT_PATH}{types_path_generator(AIRPORT)}")
 
@@ -88,7 +88,7 @@ class TestLastETDExtractor(TestCase):
             type_container
         )
 
-        expected_loaded_data = pd.read_csv(
+        expected_loaded_data = cudf.read_csv(
             f"data{SEPARATOR}LastETDExtractor{SEPARATOR}expected_data.csv",
             parse_dates=[COLUMN_NAME_TIMESTAMP]
         ).sort_values(COLUMN_NAME_TIMESTAMP)

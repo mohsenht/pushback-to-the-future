@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-import pandas as pd
+import cudf
 
 from src.model.Input import Input
 from src.clean.TypeContainer import TypeContainer
@@ -11,10 +11,10 @@ from src.loader.FeatureExtractor import FeatureExtractor
 class BusyETDExtractor(FeatureExtractor):
 
     def load_data(self,
-                  now: pd.Timestamp,
-                  data: pd.DataFrame,
+                  now: Timestamp,
+                  data: cudf.DataFrame,
                   input_data: Input,
-                  type_container: TypeContainer) -> pd.DataFrame:
+                  type_container: TypeContainer) -> cudf.DataFrame:
         latest_now_etd = input_data.etd.groupby(FLIGHT_ID).last()
         latest_now_etd = latest_now_etd.sort_values(ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME)
         results = data.apply(self.calculate_how_busy_is_departure, args=(latest_now_etd, now), axis=1)

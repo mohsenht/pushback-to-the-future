@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-import pandas as pd
+import cudf
 
 from src.model.Input import Input
 from src.clean.TypeContainer import TypeContainer
@@ -19,9 +19,9 @@ class LastWeatherExtractor(FeatureExtractor):
 
     def load_data(self,
                   now: pd.Timestamp,
-                  data: pd.DataFrame,
+                  data: cudf.DataFrame,
                   input_data: Input,
-                  type_container: TypeContainer) -> pd.DataFrame:
+                  type_container: TypeContainer) -> cudf.DataFrame:
         data[LastWeatherExtractor.DEPARTURE_TIME] = data.last_etd.apply(lambda x: timedelta(minutes=x) + now)
         data[LastWeatherExtractor.DEPARTURE_TIME] = data[LastWeatherExtractor.DEPARTURE_TIME].apply(
             lambda x: (x + timedelta(minutes=30)).replace(
@@ -36,7 +36,7 @@ class LastWeatherExtractor(FeatureExtractor):
             .groupby(
             LAMP_COLUMN_FORECAST_TIMESTAMP).last()
         now_weather = now_weather.iloc[:, 1:]
-        weather = pd.merge(
+        weather = cudf.merge(
             data,
             now_weather,
             how='left',

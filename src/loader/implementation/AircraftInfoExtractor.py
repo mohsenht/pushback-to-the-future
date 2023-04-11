@@ -1,4 +1,4 @@
-import pandas as pd
+import cudf
 
 from src.model.Input import Input
 from src.clean.TypeContainer import TypeContainer
@@ -11,16 +11,16 @@ class AircraftInfoExtractor(FeatureExtractor):
 
     def load_data(self,
                   now: pd.Timestamp,
-                  data: pd.DataFrame,
+                  data: cudf.DataFrame,
                   input_data: Input,
-                  type_container: TypeContainer) -> pd.DataFrame:
+                  type_container: TypeContainer) -> cudf.DataFrame:
         boolean_feature_names = []
         boolean_feature_names.extend(['a_' + s for s in type_container.aircraft_type])
         boolean_feature_names.extend(['e_' + s for s in type_container.aircraft_engine_class])
         boolean_feature_names.extend(['f_' + s for s in type_container.flight_type])
         boolean_feature_names.extend(['m_' + s for s in type_container.major_carrier])
-        new_data = pd.DataFrame(False, index=data.index, columns=boolean_feature_names)
-        data = pd.concat([data, new_data], axis=1)
+        new_data = cudf.DataFrame(False, index=data.index, columns=boolean_feature_names)
+        data = cudf.concat([data, new_data], axis=1)
         filtered_mfs = input_data.mfs[input_data.mfs[FLIGHT_ID].isin(data.gufi)]
         results = data.apply(self.fill_mfs_for_each_flight, args=(filtered_mfs,), axis=1)
 

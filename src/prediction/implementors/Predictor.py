@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-import pandas as pd
+import cudf
 
 from src.prediction.LoadRawData import LoadRawData
 from src.model.Model import Model
@@ -17,10 +17,10 @@ class Predictor(PredictInterface):
 
     def predict(self,
                 now: pd.Timestamp,
-                data: pd.DataFrame,
+                data: cudf.DataFrame,
                 raw_data: LoadRawData,
                 airport: str,
-                model: Model) -> pd.DataFrame:
+                model: Model) -> cudf.DataFrame:
         input_data = raw_data.get_input(now)
         now_data = data.loc[
             data.timestamp == now

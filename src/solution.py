@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-import pandas as pd
+import cudf
 import xgboost as xgb
 
 from src.model.AirportModel import AirportModel
@@ -29,21 +29,21 @@ def load_model(solution_directory: Path) -> Any:
 
 
 def predict(
-        config: pd.DataFrame,
-        etd: pd.DataFrame,
-        first_position: pd.DataFrame,
-        lamp: pd.DataFrame,
-        mfs: pd.DataFrame,
-        runways: pd.DataFrame,
-        standtimes: pd.DataFrame,
-        tbfm: pd.DataFrame,
-        tfm: pd.DataFrame,
+        config: cudf.DataFrame,
+        etd: cudf.DataFrame,
+        first_position: cudf.DataFrame,
+        lamp: cudf.DataFrame,
+        mfs: cudf.DataFrame,
+        runways: cudf.DataFrame,
+        standtimes: cudf.DataFrame,
+        tbfm: cudf.DataFrame,
+        tfm: cudf.DataFrame,
         airport: str,
-        prediction_time: pd.Timestamp,
-        partial_submission_format: pd.DataFrame,
+        prediction_time: cudf.Timestamp,
+        partial_submission_format: cudf.DataFrame,
         model: Any,
         solution_directory: Path,
-) -> pd.DataFrame:
+) -> cudf.DataFrame:
     input_data = prepareData(config,
                              etd,
                              first_position,
@@ -68,15 +68,15 @@ def predict(
 
 
 def prepareData(
-        config: pd.DataFrame,
-        etd: pd.DataFrame,
-        first_position: pd.DataFrame,
-        lamp: pd.DataFrame,
-        mfs: pd.DataFrame,
-        runways: pd.DataFrame,
-        standtimes: pd.DataFrame,
-        tbfm: pd.DataFrame,
-        tfm: pd.DataFrame,
+        config: cudf.DataFrame,
+        etd: cudf.DataFrame,
+        first_position: cudf.DataFrame,
+        lamp: cudf.DataFrame,
+        mfs: cudf.DataFrame,
+        runways: cudf.DataFrame,
+        standtimes: cudf.DataFrame,
+        tbfm: cudf.DataFrame,
+        tfm: cudf.DataFrame,
 ) -> Input:
     etd = etd.copy()
     runways = runways.copy()
@@ -84,22 +84,22 @@ def prepareData(
     lamp = lamp.copy()
     config = config.copy()
 
-    etd[ETD_COLUMN_TIMESTAMP] = pd.to_datetime(etd[ETD_COLUMN_TIMESTAMP])
-    etd[ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME] = pd.to_datetime(
+    etd[ETD_COLUMN_TIMESTAMP] = cudf.to_datetime(etd[ETD_COLUMN_TIMESTAMP])
+    etd[ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME] = cudf.to_datetime(
         etd[ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME])
 
-    runways[RUNWAYS_COLUMN_TIMESTAMP] = pd.to_datetime(runways[RUNWAYS_COLUMN_TIMESTAMP])
-    runways[RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME] = pd.to_datetime(
+    runways[RUNWAYS_COLUMN_TIMESTAMP] = cudf.to_datetime(runways[RUNWAYS_COLUMN_TIMESTAMP])
+    runways[RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME] = cudf.to_datetime(
         runways[RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME])
 
-    standtimes[STANDTIMES_COLUMN_TIMESTAMP] = pd.to_datetime(standtimes[STANDTIMES_COLUMN_TIMESTAMP])
-    standtimes[STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME] = pd.to_datetime(
+    standtimes[STANDTIMES_COLUMN_TIMESTAMP] = cudf.to_datetime(standtimes[STANDTIMES_COLUMN_TIMESTAMP])
+    standtimes[STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME] = cudf.to_datetime(
         standtimes[STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME])
 
-    lamp[LAMP_COLUMN_TIMESTAMP] = pd.to_datetime(lamp[LAMP_COLUMN_TIMESTAMP])
-    lamp[LAMP_COLUMN_FORECAST_TIMESTAMP] = pd.to_datetime(lamp[LAMP_COLUMN_FORECAST_TIMESTAMP])
+    lamp[LAMP_COLUMN_TIMESTAMP] = cudf.to_datetime(lamp[LAMP_COLUMN_TIMESTAMP])
+    lamp[LAMP_COLUMN_FORECAST_TIMESTAMP] = cudf.to_datetime(lamp[LAMP_COLUMN_FORECAST_TIMESTAMP])
 
-    config[CONFIG_COLUMN_TIMESTAMP] = pd.to_datetime(config[CONFIG_COLUMN_TIMESTAMP])
+    config[CONFIG_COLUMN_TIMESTAMP] = cudf.to_datetime(config[CONFIG_COLUMN_TIMESTAMP])
 
     return Input(
         config.sort_values(CONFIG_COLUMN_TIMESTAMP),
