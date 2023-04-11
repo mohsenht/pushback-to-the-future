@@ -43,7 +43,7 @@ def train():
         labels = data.iloc[:, 3]
         features = data.iloc[:, 4:]
         params = {
-            'objective': 'reg:squarederror',
+            'objective': 'reg:pseudohubererror',
             'learning_rate': 0.1,
             'max_depth': 5
         }
@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
     # for airport in AIRPORTS:
     #     Extractor(f"{TRAIN_PATH}", airport).extract()
-    # train()
+    train()
     open_arena()
     # data_loader()
 
