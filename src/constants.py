@@ -2,7 +2,7 @@ import os
 
 SEPARATOR = os.path.sep
 
-NUMBER_OF_PROCESSORS = 10
+NUMBER_OF_PROCESSORS = 30
 
 AIRPORTS = [
     "KATL",

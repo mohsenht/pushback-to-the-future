@@ -16,9 +16,6 @@ from src.constants import AIRPORTS, SEPARATOR, SUBMISSION_FORMAT_MINUTES_UNTIL_P
     LAMP_COLUMN_FORECAST_TIMESTAMP, STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME
 from src.path_generator_utility import model_path_generator, types_path_generator
 
-pd.options.mode.chained_assignment = None
-
-
 def load_model(solution_directory: Path) -> Any:
     airport_dict = {}
 
@@ -81,28 +78,28 @@ def prepareData(
         tbfm: pd.DataFrame,
         tfm: pd.DataFrame,
 ) -> Input:
-    temp = pd.to_datetime(etd[ETD_COLUMN_TIMESTAMP].copy())
-    etd[ETD_COLUMN_TIMESTAMP] = temp
-    temp = pd.to_datetime(etd[ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME].copy())
-    etd[ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME] = temp
+    etd = etd.copy()
+    runways = runways.copy()
+    standtimes = standtimes.copy()
+    lamp = lamp.copy()
+    config = config.copy()
 
-    temp = pd.to_datetime(runways[RUNWAYS_COLUMN_TIMESTAMP].copy())
-    runways[RUNWAYS_COLUMN_TIMESTAMP] = temp
-    temp = pd.to_datetime(runways[RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME].copy())
-    runways[RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME] = temp
+    etd[ETD_COLUMN_TIMESTAMP] = pd.to_datetime(etd[ETD_COLUMN_TIMESTAMP])
+    etd[ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME] = pd.to_datetime(
+        etd[ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME])
 
-    temp = pd.to_datetime(standtimes[STANDTIMES_COLUMN_TIMESTAMP].copy())
-    standtimes[STANDTIMES_COLUMN_TIMESTAMP] = temp
-    temp = pd.to_datetime(standtimes[STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME].copy())
-    standtimes[STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME] = temp
+    runways[RUNWAYS_COLUMN_TIMESTAMP] = pd.to_datetime(runways[RUNWAYS_COLUMN_TIMESTAMP])
+    runways[RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME] = pd.to_datetime(
+        runways[RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME])
 
-    temp = pd.to_datetime(lamp[LAMP_COLUMN_TIMESTAMP].copy())
-    lamp[LAMP_COLUMN_TIMESTAMP] = temp
-    temp = pd.to_datetime(lamp[LAMP_COLUMN_FORECAST_TIMESTAMP].copy())
-    lamp[LAMP_COLUMN_FORECAST_TIMESTAMP] = temp
+    standtimes[STANDTIMES_COLUMN_TIMESTAMP] = pd.to_datetime(standtimes[STANDTIMES_COLUMN_TIMESTAMP])
+    standtimes[STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME] = pd.to_datetime(
+        standtimes[STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME])
 
-    temp = pd.to_datetime(config[CONFIG_COLUMN_TIMESTAMP].copy())
-    config[CONFIG_COLUMN_TIMESTAMP] = temp
+    lamp[LAMP_COLUMN_TIMESTAMP] = pd.to_datetime(lamp[LAMP_COLUMN_TIMESTAMP])
+    lamp[LAMP_COLUMN_FORECAST_TIMESTAMP] = pd.to_datetime(lamp[LAMP_COLUMN_FORECAST_TIMESTAMP])
+
+    config[CONFIG_COLUMN_TIMESTAMP] = pd.to_datetime(config[CONFIG_COLUMN_TIMESTAMP])
 
     return Input(
         config.sort_values(CONFIG_COLUMN_TIMESTAMP),
