@@ -79,21 +79,21 @@ def prepareData(
         tbfm: pd.DataFrame,
         tfm: pd.DataFrame,
 ) -> Input:
-    etd[ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME] = pd.to_datetime(etd[ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME])
-    etd[ETD_COLUMN_TIMESTAMP] = pd.to_datetime(etd[ETD_COLUMN_TIMESTAMP])
+    etd.loc[:, ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME] = pd.to_datetime(etd[ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME])
+    etd.loc[:, ETD_COLUMN_TIMESTAMP] = pd.to_datetime(etd[ETD_COLUMN_TIMESTAMP])
 
-    runways[RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME] = pd.to_datetime(
+    runways.loc[:, RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME] = pd.to_datetime(
         runways[RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME])
-    runways[RUNWAYS_COLUMN_TIMESTAMP] = pd.to_datetime(runways[RUNWAYS_COLUMN_TIMESTAMP])
+    runways.loc[:, RUNWAYS_COLUMN_TIMESTAMP] = pd.to_datetime(runways[RUNWAYS_COLUMN_TIMESTAMP])
 
-    standtimes[STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME] = pd.to_datetime(
+    standtimes.loc[:, STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME] = pd.to_datetime(
         standtimes[STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME])
-    standtimes[STANDTIMES_COLUMN_TIMESTAMP] = pd.to_datetime(standtimes[STANDTIMES_COLUMN_TIMESTAMP])
+    standtimes.loc[:, STANDTIMES_COLUMN_TIMESTAMP] = pd.to_datetime(standtimes[STANDTIMES_COLUMN_TIMESTAMP])
 
-    lamp[LAMP_COLUMN_FORECAST_TIMESTAMP] = pd.to_datetime(lamp[LAMP_COLUMN_FORECAST_TIMESTAMP])
-    lamp[LAMP_COLUMN_TIMESTAMP] = pd.to_datetime(lamp[LAMP_COLUMN_TIMESTAMP])
+    lamp.loc[:, LAMP_COLUMN_FORECAST_TIMESTAMP] = pd.to_datetime(lamp[LAMP_COLUMN_FORECAST_TIMESTAMP])
+    lamp.loc[:, LAMP_COLUMN_TIMESTAMP] = pd.to_datetime(lamp[LAMP_COLUMN_TIMESTAMP])
 
-    config[CONFIG_COLUMN_TIMESTAMP] = pd.to_datetime(config[CONFIG_COLUMN_TIMESTAMP])
+    config.loc[:, CONFIG_COLUMN_TIMESTAMP] = pd.to_datetime(config[CONFIG_COLUMN_TIMESTAMP])
 
     return Input(
         config.sort_values(CONFIG_COLUMN_TIMESTAMP),
