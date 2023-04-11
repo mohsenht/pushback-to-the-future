@@ -1,3 +1,5 @@
+import time
+
 import pandas as pd
 import xgboost as xgb
 from sklearn.metrics import mean_absolute_error
@@ -78,8 +80,14 @@ def open_arena():
 
 
 if __name__ == '__main__':
+    start_time = time.time()
+
     # for airport in AIRPORTS:
     #     Extractor(f"{TRAIN_PATH}", airport).extract()
     # train()
     open_arena()
     # data_loader()
+
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Elapsed time: {elapsed_time:.2f} seconds")

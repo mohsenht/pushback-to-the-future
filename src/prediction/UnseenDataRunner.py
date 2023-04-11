@@ -1,5 +1,6 @@
 import multiprocessing as mp
 import os
+import time
 from pathlib import Path
 
 import pandas as pd
@@ -19,6 +20,7 @@ class UnseenDataRunner:
         model = self.predict_interface.load_model(Path(os.getcwd()))
         results = []
         for airport in airports:
+            start_time = time.time()
             print(f"Loading airport features: {airport}")
             raw_data = LoadRawData(airport)
 
@@ -33,7 +35,9 @@ class UnseenDataRunner:
             pool.close()
             pool.join()
 
-
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            print(f"{airport} features loaded time: {elapsed_time:.2f} seconds")
 
         return pd.concat(results, axis=0, ignore_index=True)
 
