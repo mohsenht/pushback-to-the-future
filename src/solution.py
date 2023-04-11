@@ -45,7 +45,15 @@ def predict(
         model: Any,
         solution_directory: Path,
 ) -> pd.DataFrame:
-    input_data = prepareData()
+    input_data = prepareData(config,
+                             etd,
+                             first_position,
+                             lamp,
+                             mfs,
+                             runways,
+                             standtimes,
+                             tbfm,
+                             tfm)
     prediction = partial_submission_format.copy()
     data = model.data_gatherer.load_features(
         prediction_time,
