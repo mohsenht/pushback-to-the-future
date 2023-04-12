@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any
 
 import cudf
+import pandas as pd
 
 from src.prediction.LoadRawData import LoadRawData
 from src.model.Model import Model

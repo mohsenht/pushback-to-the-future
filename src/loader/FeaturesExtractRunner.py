@@ -1,4 +1,5 @@
 import cudf
+import pandas
 
 from src.model.Input import Input
 from src.clean.TypeContainer import TypeContainer
@@ -13,7 +14,7 @@ class FeatureExtractRunner:
         self.data_loaders.append(data_loader)
 
     def load_features(self,
-                      now: Timestamp,
+                      now: pandas.Timestamp,
                       data: cudf.DataFrame,
                       input_data: Input,
                       type_container: TypeContainer) -> cudf.DataFrame:

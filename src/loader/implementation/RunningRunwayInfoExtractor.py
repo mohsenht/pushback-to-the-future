@@ -1,4 +1,5 @@
 import cudf
+import pandas as pd
 
 from src.constants import CONFIG_COLUMN_ARRIVAL_RUNWAYS, CONFIG_COLUMN_DEPARTURE_RUNWAYS
 from src.model.Input import Input

@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 import cudf
+import pandas as pd
 
 from src.clean.TypeContainer import TypeContainer
 from src.constants import SEPARATOR, LAMP_COLUMN_TEMPERATURE, LAMP_COLUMN_FORECAST_TIMESTAMP, \
@@ -17,7 +18,7 @@ from src.test.constants import AIRPORT, PROJECT_PATH
 class TestLastWeatherLoader(TestCase):
 
     def test_last_weather_when_data_and_input_are_empty(self):
-        now = cudf.Timestamp.now()
+        now = pd.Timestamp.now()
         lamp_columns = [
             LAMP_COLUMN_TIMESTAMP,
             LAMP_COLUMN_FORECAST_TIMESTAMP,
@@ -51,7 +52,7 @@ class TestLastWeatherLoader(TestCase):
         assert loaded_data.empty, "loaded_data is not empty"
 
     def test_data_is_empty_but_last_weather_has_data(self):
-        now = cudf.Timestamp('2020-11-08 05:30:00')
+        now = pd.Timestamp('2020-11-08 05:30:00')
         lamp = cudf.read_csv(
             f"data{SEPARATOR}weather{SEPARATOR}lamp.csv",
             parse_dates=[COLUMN_NAME_TIMESTAMP]
@@ -76,10 +77,11 @@ class TestLastWeatherLoader(TestCase):
         assert loaded_data.empty, "loaded_data is not empty"
 
     def test_data_and_weather_loader(self):
-        now = cudf.Timestamp('2020-11-08 05:30:00')
+        now = pd.Timestamp('2020-11-08 05:30:00')
         lamp = cudf.read_csv(
             f"data{SEPARATOR}weather{SEPARATOR}lamp.csv",
-            parse_dates=[COLUMN_NAME_TIMESTAMP]
+            parse_dates=[LAMP_COLUMN_TIMESTAMP,
+                         LAMP_COLUMN_FORECAST_TIMESTAMP]
         ).sort_values(COLUMN_NAME_TIMESTAMP)
         data = cudf.read_csv(
             f"data{SEPARATOR}weather{SEPARATOR}data.csv",

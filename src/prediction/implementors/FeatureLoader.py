@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Any
 
 import cudf
+import pandas as pd
 
 from src.model.AirportModel import AirportModel
 from src.loader.FeatureExtractorContainer import FeatureExtractorContainer

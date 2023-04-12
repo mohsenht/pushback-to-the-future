@@ -1,4 +1,5 @@
 import cudf
+import pandas as pd
 
 from src.model.Input import Input
 from src.constants import FLIGHT_ID, RUNWAYS_COLUMN_DEPARTURE_RUNWAY_ACTUAL, ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME

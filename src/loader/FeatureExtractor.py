@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 import cudf
+import pandas
 
 from src.model.Input import Input
 from src.clean.TypeContainer import TypeContainer
@@ -10,7 +11,7 @@ class FeatureExtractor(ABC):
 
     @abstractmethod
     def load_data(self,
-                  now: Timestamp,
+                  now: pandas.Timestamp,
                   data: cudf.DataFrame,
                   input_data: Input,
                   type_container: TypeContainer) -> cudf.DataFrame:

@@ -1,5 +1,5 @@
 import cudf
-from pandas import Timestamp
+import pandas as pd
 
 from src.constants import FILE_NAME_ETD, FILE_NAME_RUNWAYS, FILE_NAME_STANDTIMES, FILE_NAME_LAMP, FILE_NAME_CONFIG, \
     FILE_NAME_MFS, LAMP_COLUMN_FORECAST_TIMESTAMP, STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME, \
@@ -54,7 +54,7 @@ class LoadRawData:
 
         self.mfs = cudf.read_csv(path_generator(airport, FILE_NAME_MFS))
 
-    def get_input(self, now: Timestamp):
+    def get_input(self, now: pd.Timestamp):
         return Input(
             config=crop_data_in_30h(now, self.config),
             etd=crop_data_in_30h(now, self.etd),

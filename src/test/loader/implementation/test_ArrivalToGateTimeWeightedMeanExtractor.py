@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 import cudf
+import pandas as pd
 
 from src.clean.TypeContainer import TypeContainer
 from src.constants import SEPARATOR, FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE, \
@@ -16,7 +17,7 @@ from src.test.constants import PROJECT_PATH, AIRPORT
 
 class TestArrivalToGateTimeWeightedMeanExtractor(TestCase):
     def test_load_data(self):
-        now = cudf.Timestamp('2020-11-08 05:30:00')
+        now = pd.Timestamp('2020-11-08 05:30:00')
         data = cudf.read_csv(
             f"data{SEPARATOR}ArrivalToGateTimeWeightedMeanExtractor{SEPARATOR}data.csv",
             parse_dates=[COLUMN_NAME_TIMESTAMP]
@@ -47,10 +48,13 @@ class TestArrivalToGateTimeWeightedMeanExtractor(TestCase):
 
         assert not loaded_data.empty, "loaded_data is empty"
         assert hasattr(loaded_data, FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE), "loaded_data does not have column ''"
-        assert loaded_data.iloc[-1][FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE] != 0
+        loaded_data = loaded_data.to_pandas()
+        mean = loaded_data.iloc[-1][FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE]
+        print(mean)
+        assert mean != 0
 
     def test_load_data_without_any_arrival_to_gate_data(self):
-        now = cudf.Timestamp('2020-11-08 05:30:00')
+        now = pd.Timestamp('2020-11-08 05:30:00')
         data = cudf.read_csv(
             f"data{SEPARATOR}ArrivalToGateTimeWeightedMeanExtractor{SEPARATOR}data.csv",
             parse_dates=[COLUMN_NAME_TIMESTAMP]
@@ -86,6 +90,7 @@ class TestArrivalToGateTimeWeightedMeanExtractor(TestCase):
 
         assert not loaded_data.empty, "loaded_data is not empty"
         assert hasattr(loaded_data, FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE), "loaded_data does not have column ''"
-        assert loaded_data.iloc[-1][
-                   FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE
-               ] == ARRIVAL_TO_GATE_WEIGHTED_MEAN_TIME_CONSTANT_FOR_EMPTY_ARRIVAL
+        loaded_data = loaded_data.to_pandas()
+        mean = loaded_data.iloc[-1][FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE]
+        print(mean)
+        assert mean == ARRIVAL_TO_GATE_WEIGHTED_MEAN_TIME_CONSTANT_FOR_EMPTY_ARRIVAL

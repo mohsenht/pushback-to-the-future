@@ -1,8 +1,6 @@
-from datetime import timedelta
-
 import cudf
+import pandas as pd
 
-from src.model.Input import Input
 from src.clean.TypeContainer import TypeContainer
 from src.constants import CLOUD_CATEGORY_BK, CLOUD_CATEGORY_CL, \
     CLOUD_CATEGORY_FEW, CLOUD_CATEGORY_OV, CLOUD_CATEGORY_SC, LIGHTNING_PROB_CATEGORY_N, LIGHTNING_PROB_CATEGORY_L, \
@@ -12,6 +10,7 @@ from src.constants import CLOUD_CATEGORY_BK, CLOUD_CATEGORY_CL, \
     LAMP_COLUMN_WIND_GUST, LAMP_COLUMN_CLOUD_CEILING, LAMP_COLUMN_VISIBILITY, LAMP_COLUMN_FORECAST_TIMESTAMP, \
     LAMP_COLUMN_CLOUD, CLOUD_CATEGORY_PREFIX, LAMP_COLUMN_LIGHTNING_PROB, LIGHTNING_PROB_CATEGORY_PREFIX
 from src.loader.FeatureExtractor import FeatureExtractor
+from src.model.Input import Input
 
 
 class LastWeatherExtractor(FeatureExtractor):
@@ -22,14 +21,11 @@ class LastWeatherExtractor(FeatureExtractor):
                   data: cudf.DataFrame,
                   input_data: Input,
                   type_container: TypeContainer) -> cudf.DataFrame:
-        data[LastWeatherExtractor.DEPARTURE_TIME] = data.last_etd.apply(lambda x: timedelta(minutes=x) + now)
-        data[LastWeatherExtractor.DEPARTURE_TIME] = data[LastWeatherExtractor.DEPARTURE_TIME].apply(
-            lambda x: (x + timedelta(minutes=30)).replace(
-                second=0,
-                microsecond=0,
-                minute=0,
-                hour=(x + timedelta(minutes=30)).hour)
+        datetime_now_minutes = int(now.timestamp() / 60)
+        data[LastWeatherExtractor.DEPARTURE_TIME] = data.last_etd.apply(
+            lambda x: int((x + datetime_now_minutes + 30) / 60) * 3600
         )
+        data[LastWeatherExtractor.DEPARTURE_TIME] = cudf.to_datetime(data[LastWeatherExtractor.DEPARTURE_TIME], unit='s')
         now_weather = input_data.lamp[
             input_data.lamp[LAMP_COLUMN_FORECAST_TIMESTAMP].isin(data.departure_time.unique())
         ] \
@@ -63,15 +59,23 @@ class LastWeatherExtractor(FeatureExtractor):
         data[f"{CLOUD_CATEGORY_PREFIX}{CLOUD_CATEGORY_OV}"] = weather[f"{CLOUD_CATEGORY_PREFIX}{CLOUD_CATEGORY_OV}"]
         data[f"{CLOUD_CATEGORY_PREFIX}{CLOUD_CATEGORY_SC}"] = weather[f"{CLOUD_CATEGORY_PREFIX}{CLOUD_CATEGORY_SC}"]
 
-        weather[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_N}"] = weather[LAMP_COLUMN_LIGHTNING_PROB] == LIGHTNING_PROB_CATEGORY_N
-        weather[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_L}"] = weather[LAMP_COLUMN_LIGHTNING_PROB] == LIGHTNING_PROB_CATEGORY_L
-        weather[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_M}"] = weather[LAMP_COLUMN_LIGHTNING_PROB] == LIGHTNING_PROB_CATEGORY_M
-        weather[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_H}"] = weather[LAMP_COLUMN_LIGHTNING_PROB] == LIGHTNING_PROB_CATEGORY_H
+        weather[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_N}"] = weather[
+                                                                                      LAMP_COLUMN_LIGHTNING_PROB] == LIGHTNING_PROB_CATEGORY_N
+        weather[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_L}"] = weather[
+                                                                                      LAMP_COLUMN_LIGHTNING_PROB] == LIGHTNING_PROB_CATEGORY_L
+        weather[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_M}"] = weather[
+                                                                                      LAMP_COLUMN_LIGHTNING_PROB] == LIGHTNING_PROB_CATEGORY_M
+        weather[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_H}"] = weather[
+                                                                                      LAMP_COLUMN_LIGHTNING_PROB] == LIGHTNING_PROB_CATEGORY_H
 
-        data[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_N}"] = weather[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_N}"]
-        data[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_L}"] = weather[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_L}"]
-        data[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_M}"] = weather[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_M}"]
-        data[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_H}"] = weather[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_H}"]
+        data[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_N}"] = weather[
+            f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_N}"]
+        data[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_L}"] = weather[
+            f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_L}"]
+        data[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_M}"] = weather[
+            f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_M}"]
+        data[f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_H}"] = weather[
+            f"{LIGHTNING_PROB_CATEGORY_PREFIX}{LIGHTNING_PROB_CATEGORY_H}"]
 
         # data[LAMP_COLUMN_PRECIP] = weather[LAMP_COLUMN_PRECIP]
 

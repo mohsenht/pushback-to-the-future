@@ -3,6 +3,7 @@ from typing import Any
 
 import numpy as np
 import cudf
+import pandas
 import xgboost as xgb
 
 from src.model.AirportModel import AirportModel
@@ -39,11 +40,13 @@ def predict(
         tbfm: cudf.DataFrame,
         tfm: cudf.DataFrame,
         airport: str,
-        prediction_time: cudf.Timestamp,
+        prediction_time: pandas.Timestamp,
         partial_submission_format: cudf.DataFrame,
         model: Any,
         solution_directory: Path,
 ) -> cudf.DataFrame:
+    if partial_submission_format.empty:
+        return partial_submission_format
     input_data = prepareData(config,
                              etd,
                              first_position,
