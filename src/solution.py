@@ -44,6 +44,8 @@ def predict(
         model: Any,
         solution_directory: Path,
 ) -> pd.DataFrame:
+    if partial_submission_format.empty:
+        return partial_submission_format
     input_data = prepareData(config,
                              etd,
                              first_position,

@@ -16,6 +16,42 @@ from src.test.constants import AIRPORT, PROJECT_PATH
 
 class TestLastWeatherLoader(TestCase):
 
+    def test_last_weather_when_input_are_empty_and_has_data(self):
+        now = pd.Timestamp.now()
+        lamp_columns = [
+            LAMP_COLUMN_TIMESTAMP,
+            LAMP_COLUMN_FORECAST_TIMESTAMP,
+            LAMP_COLUMN_TEMPERATURE,
+            LAMP_COLUMN_WIND_DIRECTION,
+            LAMP_COLUMN_WIND_SPEED,
+            LAMP_COLUMN_WIND_GUST,
+            LAMP_COLUMN_CLOUD_CEILING,
+            LAMP_COLUMN_VISIBILITY,
+            LAMP_COLUMN_CLOUD,
+            LAMP_COLUMN_LIGHTNING_PROB,
+            LAMP_COLUMN_PRECIP
+        ]
+        input_data = Input(
+            config=pd.DataFrame(),
+            etd=pd.DataFrame(),
+            first_position=pd.DataFrame(),
+            lamp=pd.DataFrame(columns=lamp_columns),
+            mfs=pd.DataFrame(),
+            runways=pd.DataFrame(),
+            standtimes=pd.DataFrame(),
+            tbfm=pd.DataFrame(),
+            tfm=pd.DataFrame(),
+        )
+        data = pd.read_csv(
+            f"data{SEPARATOR}weather{SEPARATOR}data.csv",
+            parse_dates=[COLUMN_NAME_TIMESTAMP]
+        ).sort_values(COLUMN_NAME_TIMESTAMP)
+        type_container = TypeContainer.from_file(f"{PROJECT_PATH}{types_path_generator(AIRPORT)}")
+
+        loaded_data = LastWeatherExtractor().load_data(now, data, input_data, type_container)
+
+        assert loaded_data.empty, "loaded_data is not empty"
+
     def test_last_weather_when_data_and_input_are_empty(self):
         now = pd.Timestamp.now()
         lamp_columns = [
@@ -79,7 +115,10 @@ class TestLastWeatherLoader(TestCase):
         now = pd.Timestamp('2020-11-08 05:30:00')
         lamp = pd.read_csv(
             f"data{SEPARATOR}weather{SEPARATOR}lamp.csv",
-            parse_dates=[COLUMN_NAME_TIMESTAMP]
+            parse_dates=[
+                COLUMN_NAME_TIMESTAMP,
+                LAMP_COLUMN_FORECAST_TIMESTAMP
+            ]
         ).sort_values(COLUMN_NAME_TIMESTAMP)
         data = pd.read_csv(
             f"data{SEPARATOR}weather{SEPARATOR}data.csv",
