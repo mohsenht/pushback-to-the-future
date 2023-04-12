@@ -25,16 +25,13 @@ class LastTwoETDExtractor(FeatureExtractor):
                   input_data: Input,
                   type_container: TypeContainer) -> cudf.DataFrame:
         now_etd = input_data.etd[input_data.etd[FLIGHT_ID].isin(data[FLIGHT_ID])]
-        diff_etd = cudf.DataFrame(index=now_etd.index, columns=['diff_etd']).fillna(0)
-        diff_etd = cudf.concat([now_etd, diff_etd], axis=1)
-        diff_etd['diff_etd'] = (now_etd[ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME] - now).dt.seconds
-        latest_now_etd = diff_etd.groupby(FLIGHT_ID).nth(-2)
-        latest_now_etd = latest_now_etd.reset_index()
-        data['second_last_etd'] = (data.merge(
+        now_etd['second_last_etd'] = (now_etd[ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME] - now).dt.seconds
+        latest_now_etd = now_etd.groupby(FLIGHT_ID).nth(-2)
+        data = data.merge(
             latest_now_etd,
             how="left",
             on=FLIGHT_ID
-        ).diff_etd.fillna(0) / 60)
+        )
 
         if len(latest_now_etd) == 0:
             data["diff_two_etd"] = 0
