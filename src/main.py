@@ -12,6 +12,7 @@ from src.path_generator_utility import path_generator, labels_path_generator, mo
 from src.prediction.UnseenDataRunner import UnseenDataRunner
 from src.prediction.implementors.FeatureLoader import FeatureLoader
 from src.prediction.implementors.Predictor import Predictor
+from src.utility import rearrange_submission
 
 
 def run_algorithm(airport_name):
@@ -25,6 +26,7 @@ def run_algorithm(airport_name):
 
     mae = mean_absolute_error(y_test, y_pred)
     print("MAE: %.2f" % mae)
+
 
 def data_loader():
     data = cudf.read_csv(open_arena_submission_format_path_generator(), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
@@ -60,22 +62,10 @@ def open_arena():
     predictions = UnseenDataRunner(unlabeled_data, Predictor()).run(AIRPORTS)
 
     airport_submission_format = cudf.read_csv(open_arena_submission_format_path_generator(),
-                                            parse_dates=[COLUMN_NAME_TIMESTAMP])
-    predictions = (
-        predictions.set_index([
-            SUBMISSION_FORMAT_FLIGHT_ID,
-            COLUMN_NAME_TIMESTAMP,
-            SUBMISSION_FORMAT_AIRPORT
-        ])
-        .loc[
-            airport_submission_format.set_index([
-                SUBMISSION_FORMAT_FLIGHT_ID,
-                COLUMN_NAME_TIMESTAMP,
-                SUBMISSION_FORMAT_AIRPORT
-            ]).index
-        ]
-        .reset_index()
-    )
+                                              parse_dates=[COLUMN_NAME_TIMESTAMP])
+
+    predictions = rearrange_submission(airport_submission_format, predictions)
+
     predictions.to_csv(f"{TRAIN_PATH}result.csv", index=False)
 
 
