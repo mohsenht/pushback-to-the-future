@@ -18,6 +18,7 @@ class FeatureExtractRunner:
                       data: cudf.DataFrame,
                       input_data: Input,
                       type_container: TypeContainer) -> cudf.DataFrame:
+        print(now)
         now_data = data.loc[
             data.timestamp == now
             ].reset_index(drop=True)

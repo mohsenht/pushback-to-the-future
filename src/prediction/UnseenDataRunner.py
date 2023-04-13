@@ -1,9 +1,10 @@
-import multiprocessing as mp
+from concurrent.futures import ProcessPoolExecutor
 import os
 import time
 from pathlib import Path
 
 import cudf
+import pandas as pd
 
 from src.prediction.LoadRawData import LoadRawData
 from src.prediction.PredictInterface import PredictInterface
@@ -30,17 +31,38 @@ class UnseenDataRunner:
             timestamps = cudf.to_datetime(airport_submission_format.timestamp.unique())
             timestamps = timestamps.to_pandas()
 
-            pool = mp.Pool(processes=NUMBER_OF_PROCESSORS)
-            results.append(cudf.concat(
-                pool.starmap(
-                    self.predict_interface.predict,
-                    [(ts, airport_submission_format, raw_data, airport, model) for ts in timestamps]), axis=0,
-                ignore_index=True))
-            pool.close()
-            pool.join()
+            # with ProcessPoolExecutor(max_workers=NUMBER_OF_PROCESSORS) as executor:
+            #     results.append(cudf.concat(executor.map(self.func,
+            #                                           [(ts, airport_submission_format, raw_data, airport, model) for ts
+            #                                            in timestamps]), axis=0, ignore_index=True))
+            # results = timestamps.apply(
+            #     self.predict_interface.predict,
+            #     airport_submission_format,
+            #     raw_data,
+            #     airport,
+            #     model
+            # )
+            for ts in timestamps:
+                results.append(self.predict_interface.predict(
+                    ts,
+                    airport_submission_format,
+                    raw_data,
+                    airport,
+                    model
+                ))
 
             end_time = time.time()
             elapsed_time = end_time - start_time
             print(f"{airport} features loaded time: {elapsed_time:.2f} seconds")
 
         return cudf.concat(results, axis=0, ignore_index=True)
+
+    def func(self, args):
+        ts, airport_submission_format, raw_data, airport, model = args
+        return self.predict_interface.predict(
+            ts,
+            airport_submission_format,
+            raw_data,
+            airport,
+            model,
+        )
