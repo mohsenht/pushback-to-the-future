@@ -13,13 +13,13 @@ class FeatureExtractorContainer:
 
     def __init__(self):
         data_gatherer = FeatureExtractRunner()
-        data_gatherer.add_feature(LastETDExtractor())
-        data_gatherer.add_feature(WeightedETDLoader())
-        data_gatherer.add_feature(LastTwoETDExtractor())
-        data_gatherer.add_feature(BusyETDExtractor())
-        data_gatherer.add_feature(ArrivalToGateTimeWeightedMeanExtractor())
-        data_gatherer.add_feature(LastWeatherExtractor())
-        data_gatherer.add_feature(RunningRunwayInfoExtractor())
-        data_gatherer.add_feature(AircraftInfoExtractor())
-        # data_gatherer.add_feature(RunwayETDMeanLoader(runways_path, etd_path))
+        # data_gatherer.add_feature(LastETDExtractor())
+        # data_gatherer.add_feature(WeightedETDLoader())
+        # data_gatherer.add_feature(LastTwoETDExtractor())
+        # data_gatherer.add_feature(BusyETDExtractor())
+        # data_gatherer.add_feature(ArrivalToGateTimeWeightedMeanExtractor())
+        # data_gatherer.add_feature(LastWeatherExtractor())
+        # data_gatherer.add_feature(RunningRunwayInfoExtractor())
+        # data_gatherer.add_feature(AircraftInfoExtractor())
+        # # data_gatherer.add_feature(RunwayETDMeanLoader(runways_path, etd_path))
         self.data_gatherer = data_gatherer

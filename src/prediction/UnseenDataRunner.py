@@ -1,4 +1,4 @@
-import multiprocessing as mp
+from concurrent.futures import ProcessPoolExecutor
 import os
 import time
 from pathlib import Path
@@ -29,11 +29,10 @@ class UnseenDataRunner:
                 ]
             timestamps = pd.to_datetime(airport_submission_format.timestamp.unique())
 
-            pool = mp.Pool(processes=NUMBER_OF_PROCESSORS)
-            results.append(pd.concat(pool.starmap(self.predict_interface.predict,
-                                   [(ts, airport_submission_format, raw_data, airport, model) for ts in timestamps]), axis=0, ignore_index=True))
-            pool.close()
-            pool.join()
+            with ProcessPoolExecutor(max_workers=NUMBER_OF_PROCESSORS) as executor:
+                results.append(pd.concat(executor.map(self.func,
+                                                      [(ts, airport_submission_format, raw_data, airport, model) for ts
+                                                       in timestamps]), axis=0, ignore_index=True))
 
             end_time = time.time()
             elapsed_time = end_time - start_time
@@ -41,3 +40,12 @@ class UnseenDataRunner:
 
         return pd.concat(results, axis=0, ignore_index=True)
 
+    def func(self, args):
+        ts, airport_submission_format, raw_data, airport, model = args
+        return self.predict_interface.predict(
+            ts,
+            airport_submission_format,
+            raw_data,
+            airport,
+            model,
+        )
