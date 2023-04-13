@@ -15,7 +15,7 @@ class WeightedETDLoader(FeatureExtractor):
                   input_data: Input,
                   type_container: TypeContainer) -> cudf.DataFrame:
         w_etd = cudf.DataFrame(0, index=input_data.etd.index, columns=['w_etd'])
-        w_etd['w_etd'] = (input_data.etd['departure_runway_estimated_time'] - now).dt.total_seconds()
+        w_etd['w_etd'] = (input_data.etd['departure_runway_estimated_time'] - now).dt.seconds
         now_etd = cudf.concat([input_data.etd, w_etd], axis=1)
         latest_now_etd = now_etd.groupby(FLIGHT_ID)['w_etd'].ewm(span=2).mean()
         etd = data.merge(

@@ -17,20 +17,17 @@ class RunningRunwayInfoExtractor(FeatureExtractor):
         boolean_feature_names = []
         boolean_feature_names.extend(['de_' + s for s in type_container.runways_names])
         boolean_feature_names.extend(['ar_' + s for s in type_container.runways_names])
-        new_data = cudf.DataFrame(False, index=data.index, columns=boolean_feature_names)
+        new_data = cudf.DataFrame(index=data.index, columns=boolean_feature_names).fillna(False)
         new_data = cudf.concat([data, new_data], axis=1)
         if input_data.config.empty:
             return new_data
         now_running_runway = input_data.config.iloc[-1]
-
-        results = new_data.apply(self.fill_runways_for_each_flight, args=(now_running_runway,), axis=1)
-        return results
-
-    def fill_runways_for_each_flight(self, x, now_running_runway):
+        now_running_runway = pd.Series(now_running_runway.to_pandas().iloc[-1])
         departure_runways = str(now_running_runway[CONFIG_COLUMN_DEPARTURE_RUNWAYS]).split(', ')
         arrival_runways = str(now_running_runway[CONFIG_COLUMN_ARRIVAL_RUNWAYS]).split(', ')
         for departure_runway in departure_runways:
-            x[f"de_{departure_runway}"] = True
+            new_data[f"de_{departure_runway}"] = True
         for arrival_runway in arrival_runways:
-            x[f"ar_{arrival_runway}"] = True
-        return x
+            new_data[f"ar_{arrival_runway}"] = True
+
+        return new_data
