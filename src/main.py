@@ -37,7 +37,7 @@ def data_loader():
 
 def train():
     for airport_name in AIRPORTS:
-        print("Loading data for airport: %s", airport_name)
+        print(f"Loading data for airport: {airport_name}")
         labeled_data = cudf.read_csv(labels_path_generator(airport_name), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
             .sort_values(COLUMN_NAME_TIMESTAMP)
         data = UnseenDataRunner(labeled_data, FeatureLoader()).run([airport_name])
@@ -51,7 +51,7 @@ def train():
         }
 
         model = xgb.XGBRegressor(n_estimators=100, **params)
-        print("Training model for airport: %s", airport_name)
+        print(f"Training model for airport: {airport_name}")
         model.fit(features, labels)
         model.save_model(model_path_generator(airport_name))
 

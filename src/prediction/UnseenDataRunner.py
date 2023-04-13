@@ -28,10 +28,14 @@ class UnseenDataRunner:
                 self.unlabeled_data.airport == airport
                 ]
             timestamps = cudf.to_datetime(airport_submission_format.timestamp.unique())
+            timestamps = timestamps.to_pandas()
 
             pool = mp.Pool(processes=NUMBER_OF_PROCESSORS)
-            results.append(cudf.concat(pool.starmap(self.predict_interface.predict,
-                                   [(ts, airport_submission_format, raw_data, airport, model) for ts in timestamps]), axis=0, ignore_index=True))
+            results.append(cudf.concat(
+                pool.starmap(
+                    self.predict_interface.predict,
+                    [(ts, airport_submission_format, raw_data, airport, model) for ts in timestamps]), axis=0,
+                ignore_index=True))
             pool.close()
             pool.join()
 
@@ -40,4 +44,3 @@ class UnseenDataRunner:
             print(f"{airport} features loaded time: {elapsed_time:.2f} seconds")
 
         return cudf.concat(results, axis=0, ignore_index=True)
-
