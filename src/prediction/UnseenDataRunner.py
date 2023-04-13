@@ -1,4 +1,4 @@
-import multiprocessing as mp
+from multiprocessing import get_context
 import os
 import time
 from pathlib import Path
@@ -30,7 +30,8 @@ class UnseenDataRunner:
             timestamps = cudf.to_datetime(airport_submission_format.timestamp.unique())
             timestamps = timestamps.to_pandas()
 
-            pool = mp.Pool(processes=NUMBER_OF_PROCESSORS)
+            ctx = get_context("spawn")
+            pool = ctx.Pool(processes=NUMBER_OF_PROCESSORS)
             results.append(cudf.concat(
                 pool.starmap(
                     self.predict_interface.predict,
