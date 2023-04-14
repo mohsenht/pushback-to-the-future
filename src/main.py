@@ -6,7 +6,7 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 
 from constants import FILE_NAME_RESULTS, AIRPORTS, TRAIN_PATH, COLUMN_NAME_TIMESTAMP, SUBMISSION_FORMAT_AIRPORT, \
-    SUBMISSION_FORMAT_FLIGHT_ID, IS_DATA_CLEANED
+    SUBMISSION_FORMAT_FLIGHT_ID, IS_DATA_CLEANED, AIRPORTS_CLEAN
 from src.clean.Extractor import Extractor
 from src.clean.TimestampSorter import sort_csv_files
 from src.path_generator_utility import path_generator, labels_path_generator, model_path_generator, \
@@ -87,6 +87,7 @@ if __name__ == '__main__':
         start_time = time.time()
         for airport in AIRPORTS:
             Extractor(f"{TRAIN_PATH}", airport).extract()
+        for airport in AIRPORTS_CLEAN:
             sort_csv_files(airport)
         end_time = time.time()
         elapsed_time = end_time - start_time
