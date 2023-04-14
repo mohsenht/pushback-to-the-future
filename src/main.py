@@ -40,18 +40,18 @@ def train():
             .sort_values(COLUMN_NAME_TIMESTAMP)
         data = UnseenDataRunner(labeled_data, FeatureLoader()).run([airport_name])
         data.to_csv(path_generator(airport_name, FILE_NAME_RESULTS), index=False)
-        labels = data.iloc[:, 3]
-        features = data.iloc[:, 4:]
-        params = {
-            'objective': 'reg:pseudohubererror',
-            'learning_rate': 0.1,
-            'max_depth': 5
-        }
-
-        model = xgb.XGBRegressor(n_estimators=100, **params)
-        print("Training model for airport: %s", airport_name)
-        model.fit(features, labels)
-        model.save_model(model_path_generator(airport_name))
+        # labels = data.iloc[:, 3]
+        # features = data.iloc[:, 4:]
+        # params = {
+        #     'objective': 'reg:pseudohubererror',
+        #     'learning_rate': 0.1,
+        #     'max_depth': 5
+        # }
+        #
+        # model = xgb.XGBRegressor(n_estimators=100, **params)
+        # print("Training model for airport: %s", airport_name)
+        # model.fit(features, labels)
+        # model.save_model(model_path_generator(airport_name))
 
 
 def open_arena():
@@ -85,7 +85,7 @@ if __name__ == '__main__':
     # for airport in AIRPORTS:
     #     Extractor(f"{TRAIN_PATH}", airport).extract()
     train()
-    open_arena()
+    # open_arena()
     # data_loader()
 
     end_time = time.time()

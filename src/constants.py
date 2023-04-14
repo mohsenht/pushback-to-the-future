@@ -2,26 +2,25 @@ import os
 
 SEPARATOR = os.path.sep
 
-NUMBER_OF_PROCESSORS = 30
-
-AIRPORTS = [
-    "KATL",
-    "KCLT",
-    "KDEN",
-    "KDFW",
-    "KJFK",
-    "KMEM",
-    "KMIA",
-    "KORD",
-    "KPHX",
-    "KSEA"
-]
-
+NUMBER_OF_PROCESSORS = 10
 
 # AIRPORTS = [
-#     "KCLT",
 #     "KATL",
+#     "KCLT",
+#     "KDEN",
+#     "KDFW",
+#     "KJFK",
+#     "KMEM",
+#     "KMIA",
+#     "KORD",
+#     "KPHX",
+#     "KSEA"
 # ]
+
+
+AIRPORTS = [
+    "KCLT",
+]
 
 
 
@@ -95,6 +94,14 @@ STANDTIMES_COLUMN_DEPARTURE_STAND_ACTUAL_TIME = 'departure_stand_actual_time'
 ETD_COLUMN_FLIGHT_ID = FLIGHT_ID
 ETD_COLUMN_TIMESTAMP = COLUMN_NAME_TIMESTAMP
 ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME = 'departure_runway_estimated_time'
+
+TBFM_COLUMN_FLIGHT_ID = FLIGHT_ID
+TBFM_COLUMN_TIMESTAMP = COLUMN_NAME_TIMESTAMP
+TBFM_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME = 'scheduled_runway_estimated_time'
+
+TFM_COLUMN_FLIGHT_ID = FLIGHT_ID
+TFM_COLUMN_TIMESTAMP = COLUMN_NAME_TIMESTAMP
+TFM_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME = 'arrival_runway_estimated_time'
 
 CONFIG_COLUMN_TIMESTAMP = COLUMN_NAME_TIMESTAMP
 CONFIG_COLUMN_START_TIME = 'start_time'

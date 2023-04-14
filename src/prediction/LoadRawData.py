@@ -4,7 +4,8 @@ from pandas import Timestamp
 from src.constants import FILE_NAME_ETD, FILE_NAME_RUNWAYS, FILE_NAME_STANDTIMES, FILE_NAME_LAMP, FILE_NAME_CONFIG, \
     FILE_NAME_MFS, LAMP_COLUMN_FORECAST_TIMESTAMP, STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME, \
     RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME, ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME, ETD_COLUMN_TIMESTAMP, \
-    RUNWAYS_COLUMN_TIMESTAMP, STANDTIMES_COLUMN_TIMESTAMP, LAMP_COLUMN_TIMESTAMP, CONFIG_COLUMN_TIMESTAMP
+    RUNWAYS_COLUMN_TIMESTAMP, STANDTIMES_COLUMN_TIMESTAMP, LAMP_COLUMN_TIMESTAMP, CONFIG_COLUMN_TIMESTAMP, \
+    FILE_NAME_TFM, FILE_NAME_TBFM
 from src.model.Input import Input
 from src.path_generator_utility import path_generator
 from src.prediction.utility import crop_data_in_30h
@@ -15,6 +16,22 @@ class LoadRawData:
     def __init__(self, airport):
         self.etd = pd.read_csv(
             path_generator(airport, FILE_NAME_ETD),
+            parse_dates=[
+                ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME,
+                ETD_COLUMN_TIMESTAMP
+            ],
+        ).sort_values(ETD_COLUMN_TIMESTAMP)
+
+        self.tbfm = pd.read_csv(
+            path_generator(airport, FILE_NAME_TBFM),
+            parse_dates=[
+                ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME,
+                ETD_COLUMN_TIMESTAMP
+            ],
+        ).sort_values(ETD_COLUMN_TIMESTAMP)
+
+        self.tfm = pd.read_csv(
+            path_generator(airport, FILE_NAME_TFM),
             parse_dates=[
                 ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME,
                 ETD_COLUMN_TIMESTAMP
