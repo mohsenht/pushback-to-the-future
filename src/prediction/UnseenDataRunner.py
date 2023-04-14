@@ -32,6 +32,7 @@ class UnseenDataRunner:
                 ]
             timestamps = pd.to_datetime(airport_submission_format.timestamp.unique()).sort_values(COLUMN_NAME_TIMESTAMP)
             timestamps = timestamps[0]
+            pool = mp.Pool(processes=NUMBER_OF_PROCESSORS)
 
             start_index = 0
             while start_index < len(timestamps):
@@ -40,13 +41,14 @@ class UnseenDataRunner:
                 current_chunk_len = len(current_chunk)
                 if current_chunk_len > 0:
                     raw_data = LoadRawData(in_bound_data, current_chunk[0] - timedelta(hours=30), current_chunk[-1])
-                    pool = mp.Pool(processes=NUMBER_OF_PROCESSORS)
+
                     results.append(pd.concat(pool.starmap(self.predict_interface.predict,
                                                           [(ts, airport_submission_format, raw_data, airport, model) for
                                                            ts in timestamps]), axis=0, ignore_index=True))
-                    pool.close()
-                    pool.join()
                 start_index = end_index
+
+            pool.close()
+            pool.join()
 
             end_time = time.time()
             elapsed_time = end_time - start_time
