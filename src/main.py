@@ -75,7 +75,7 @@ if __name__ == '__main__':
     # for airport in AIRPORTS:
     #     Extractor(f"{TRAIN_PATH}", airport).extract()
     train()
-    open_arena()
+    # open_arena()
     # data_loader()
 
     end_time = time.time()
