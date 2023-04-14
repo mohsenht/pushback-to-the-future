@@ -18,4 +18,4 @@ def types_path_generator(airport):
 
 
 def model_path_generator(airport):
-    return f"{MODEL_PATH}{airport}{SEPARATOR}xgboost-huber.model"
+    return f"{MODEL_PATH}{airport}{SEPARATOR}xgboost-squaredlogerror.model"

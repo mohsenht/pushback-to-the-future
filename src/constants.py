@@ -19,8 +19,7 @@ AIRPORTS = [
 
 
 # AIRPORTS = [
-#     "KCLT",
-#     "KATL",
+#     "KJFK"
 # ]
 
 
@@ -34,7 +33,7 @@ FILE_NAME_RUNWAYS = "runways"
 FILE_NAME_STANDTIMES = "standtimes"
 FILE_NAME_TBFM = "tbfm"
 FILE_NAME_TFM = "tfm"
-FILE_NAME_RESULTS = "results"
+FILE_NAME_RESULTS = "results_huber"
 FILE_NAME_LABELS = "train_labels_"
 
 COLUMN_NAME_TIMESTAMP = 'timestamp'

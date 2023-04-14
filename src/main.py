@@ -35,17 +35,21 @@ def data_loader():
 
 def train():
     for airport_name in AIRPORTS:
-        print("Loading data for airport: %s", airport_name)
-        labeled_data = pd.read_csv(labels_path_generator(airport_name), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
-            .sort_values(COLUMN_NAME_TIMESTAMP)
-        data = UnseenDataRunner(labeled_data, FeatureLoader()).run([airport_name])
-        data.to_csv(path_generator(airport_name, FILE_NAME_RESULTS), index=False)
+        # print("Loading data for airport: %s", airport_name)
+        # labeled_data = pd.read_csv(labels_path_generator(airport_name), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
+        #     .sort_values(COLUMN_NAME_TIMESTAMP)
+        # data = UnseenDataRunner(labeled_data, FeatureLoader()).run([airport_name])
+        # data.to_csv(path_generator(airport_name, FILE_NAME_RESULTS), index=False)
+        data = pd.read_csv(path_generator(airport_name, FILE_NAME_RESULTS))
         labels = data.iloc[:, 3]
         features = data.iloc[:, 4:]
         params = {
-            'objective': 'reg:pseudohubererror',
-            'learning_rate': 0.1,
-            'max_depth': 5
+            'objective': 'reg:squaredlogerror',
+            'lambda': 0.8,
+            'tree_method': 'hist',
+            'max_bin': 24,
+            'max_depth': 10,
+            'eval_metric': 'mae'
         }
 
         model = xgb.XGBRegressor(n_estimators=100, **params)
