@@ -3,25 +3,35 @@ import os
 SEPARATOR = os.path.sep
 
 NUMBER_OF_PROCESSORS = 10
-IS_DATA_CLEANED = True
+IS_DATA_CLEANED = False
 
-# AIRPORTS = [
-#     "KATL",
-#     "KCLT",
-#     "KDEN",
-#     "KDFW",
-#     "KJFK",
-#     "KMEM",
-#     "KMIA",
-#     "KORD",
-#     "KPHX",
-#     "KSEA"
-# ]
-
+AIRPORTS_CLEAN = [
+    "KDFW",
+    "KJFK",
+    "KMEM",
+    "KMIA",
+    "KORD",
+    "KPHX",
+    "KSEA"
+]
 
 AIRPORTS = [
-    "KCLT"
+    "KATL",
+    "KCLT",
+    "KDEN",
+    "KDFW",
+    "KJFK",
+    "KMEM",
+    "KMIA",
+    "KORD",
+    "KPHX",
+    "KSEA"
 ]
+
+#
+# AIRPORTS = [
+#     "KCLT"
+# ]
 
 
 

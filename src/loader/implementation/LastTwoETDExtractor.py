@@ -17,7 +17,7 @@ class LastTwoETDExtractor(FeatureExtractor):
         diff_etd = pd.DataFrame(0, index=now_etd.index, columns=['diff_etd'])
         diff_etd = pd.concat([now_etd, diff_etd], axis=1)
         diff_etd['diff_etd'] = (now_etd[ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME] - now).dt.total_seconds()
-        latest_now_etd = diff_etd.groupby(FLIGHT_ID).apply(self.last_two_diff).reset_index(drop=True)
+        latest_now_etd = diff_etd.groupby(FLIGHT_ID, group_keys=False).apply(self.last_two_diff).reset_index(drop=True)
         if len(latest_now_etd) == 0:
             data["diff_two_etd"] = 0
         etd = data.merge(
