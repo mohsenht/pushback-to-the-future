@@ -50,6 +50,8 @@ class UnseenDataRunner:
             pool.close()
             pool.join()
 
+            in_bound_data.closeAll()
+
             end_time = time.time()
             elapsed_time = end_time - start_time
             print(f"{airport} features loaded time: {elapsed_time:.2f} seconds")

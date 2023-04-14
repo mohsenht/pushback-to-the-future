@@ -43,5 +43,6 @@ class CSVReader:
     def close_file(self):
         self.filereader.close()
         self.file.close()
+        del self.data
 
 
