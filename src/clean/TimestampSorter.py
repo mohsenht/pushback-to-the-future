@@ -20,7 +20,8 @@ def sort_csv_files(airport):
         ],
     ).sort_values(ETD_COLUMN_TIMESTAMP)
 
-    pd.to_csv(etd, path_generator(airport, FILE_NAME_ETD))
+    print(path_generator(airport, FILE_NAME_ETD))
+    etd.to_csv(path_generator(airport, FILE_NAME_ETD))
     del etd
     gc.collect()
 
@@ -32,7 +33,7 @@ def sort_csv_files(airport):
         ],
     ).sort_values(TBFM_COLUMN_FLIGHT_ID)
 
-    pd.to_csv(tbfm, path_generator(airport, FILE_NAME_TBFM))
+    tbfm.to_csv(path_generator(airport, FILE_NAME_TBFM))
     del tbfm
     gc.collect()
 
@@ -44,7 +45,7 @@ def sort_csv_files(airport):
         ],
     ).sort_values(TFM_COLUMN_TIMESTAMP)
 
-    pd.to_csv(tfm, path_generator(airport, FILE_NAME_TFM))
+    tfm.to_csv(path_generator(airport, FILE_NAME_TFM))
     del tfm
     gc.collect()
 
@@ -56,7 +57,7 @@ def sort_csv_files(airport):
         ],
     ).sort_values(RUNWAYS_COLUMN_TIMESTAMP)
 
-    pd.to_csv(runways, path_generator(airport, FILE_NAME_RUNWAYS))
+    runways.to_csv(path_generator(airport, FILE_NAME_RUNWAYS))
     del runways
     gc.collect()
 
@@ -68,7 +69,7 @@ def sort_csv_files(airport):
         ],
     ).sort_values(STANDTIMES_COLUMN_TIMESTAMP)
 
-    pd.to_csv(standtimes, path_generator(airport, FILE_NAME_STANDTIMES))
+    standtimes.to_csv(path_generator(airport, FILE_NAME_STANDTIMES))
     del standtimes
     gc.collect()
 
@@ -80,7 +81,7 @@ def sort_csv_files(airport):
         ],
     ).sort_values(LAMP_COLUMN_TIMESTAMP)
 
-    pd.to_csv(weather, path_generator(airport, FILE_NAME_LAMP))
+    weather.to_csv(path_generator(airport, FILE_NAME_LAMP))
     del weather
     gc.collect()
 
@@ -91,6 +92,6 @@ def sort_csv_files(airport):
         ],
     ).sort_values(CONFIG_COLUMN_TIMESTAMP)
 
-    pd.to_csv(config, path_generator(airport, FILE_NAME_CONFIG))
+    config.to_csv(path_generator(airport, FILE_NAME_CONFIG))
     del config
     gc.collect()

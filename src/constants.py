@@ -43,8 +43,8 @@ RUNWAYS_COLUMN_ARRIVAL_RUNWAYS = "arrival_runways"
 
 MODEL_PATH = f"data{SEPARATOR}model{SEPARATOR}"
 
-#TRAIN_PATH = f"data{SEPARATOR}train{SEPARATOR}"
-TRAIN_PATH = f"data{SEPARATOR}small_data{SEPARATOR}"
+TRAIN_PATH = f"data{SEPARATOR}train{SEPARATOR}"
+#TRAIN_PATH = f"data{SEPARATOR}small_data{SEPARATOR}"
 
 FLIGHT_ID = "gufi"
 
