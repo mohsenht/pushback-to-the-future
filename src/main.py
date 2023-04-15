@@ -2,6 +2,7 @@ import time
 
 import pandas as pd
 import xgboost as xgb
+from joblib._multiprocessing_helpers import mp
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import train_test_split
 
@@ -85,9 +86,18 @@ if __name__ == '__main__':
     if not IS_DATA_CLEANED:
         print("data cleaning is running:")
         start_time = time.time()
-        for airport in AIRPORTS:
-            Extractor(f"{TRAIN_PATH}", airport).extract()
-            sort_csv_files(airport)
+
+
+        # for airport in AIRPORTS:
+        #     Extractor(f"{TRAIN_PATH}", airport).extract()
+
+        pool = mp.Pool(processes=5)
+        pool.starmap(sort_csv_files,
+                     [(airport,) for
+                      airport in AIRPORTS])
+        pool.close()
+        pool.join()
+
         end_time = time.time()
         elapsed_time = end_time - start_time
         print(f"data cleaned in Elapsed time: {elapsed_time:.2f} seconds")
