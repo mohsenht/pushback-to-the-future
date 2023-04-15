@@ -46,9 +46,12 @@ def train():
         labels = data.iloc[:, 3]
         features = data.iloc[:, 4:]
         params = {
-            'objective': 'reg:pseudohubererror',
-            'learning_rate': 0.1,
-            'max_depth': 5
+            'objective': 'reg:squaredlogerror',
+            'lambda': 0.8,
+            'tree_method': 'hist',
+            'max_bin': 24,
+            'max_depth': 10,
+            'eval_metric': 'mae'
         }
 
         model = xgb.XGBRegressor(n_estimators=100, **params)
