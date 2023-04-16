@@ -2,7 +2,7 @@ import os
 
 SEPARATOR = os.path.sep
 
-NUMBER_OF_PROCESSORS = 4
+NUMBER_OF_PROCESSORS = 10
 IS_DATA_CLEANED = True
 
 AIRPORTS = [
@@ -18,12 +18,10 @@ AIRPORTS = [
     "KSEA"
 ]
 
-#
 # AIRPORTS = [
-#     "KCLT"
+#
+#     "KATL"
 # ]
-
-
 
 FILE_NAME_CONFIG = "config"
 FILE_NAME_ETD = "etd"
@@ -36,6 +34,7 @@ FILE_NAME_TBFM = "tbfm"
 FILE_NAME_TFM = "tfm"
 FILE_NAME_RESULTS = "results"
 FILE_NAME_RESULTS_2 = "results2"
+FILE_NAME_DEPARTURE = "departure"
 FILE_NAME_PREDICTION = "prediction"
 FILE_NAME_LABELS = "train_labels_"
 

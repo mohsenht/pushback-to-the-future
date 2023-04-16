@@ -16,11 +16,11 @@ from src.prediction.constant_chunk_size import ETD_CHUNK, TBFM_CHUNK, TFM_CHUNK,
 
 class InBoundDataLoader:
 
-    def __init__(self, airport):
+    def __init__(self, airport, labels_path):
         self.airport = airport
 
-        self.data = self.config_reader = CSVReader(
-            labels_path_generator(airport),
+        self.data = CSVReader(
+            labels_path,
             LABELS_CHUNK,
             [
                 CONFIG_COLUMN_TIMESTAMP

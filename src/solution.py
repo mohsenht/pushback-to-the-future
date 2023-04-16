@@ -70,7 +70,7 @@ def predict(
     features = data.iloc[:, 4:]
     data['last_etd'] = model.airport_dict[airport].model_departure.predict(features)
 
-    data = data.iloc[:, 0:4]
+    data = data.iloc[:, 0:5]
     data = model.data_gatherer_2.load_features(
         prediction_time,
         data,

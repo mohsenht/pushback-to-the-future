@@ -1,20 +1,18 @@
-import sys
 import multiprocessing as mp
 import time
+
 import pandas as pd
 import xgboost as xgb
-from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import train_test_split
 
 from constants import FILE_NAME_RESULTS, AIRPORTS, TRAIN_PATH, COLUMN_NAME_TIMESTAMP, SUBMISSION_FORMAT_AIRPORT, \
     SUBMISSION_FORMAT_FLIGHT_ID, IS_DATA_CLEANED, FLIGHT_ID, \
-    FILE_NAME_ETD, ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME, NUMBER_OF_PROCESSORS, FILE_NAME_RESULTS_2, \
-    SUBMISSION_FORMAT_MINUTES_UNTIL_PUSHBACK, FILE_NAME_PREDICTION
+    FILE_NAME_ETD, ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME, FILE_NAME_RESULTS_2, \
+    SUBMISSION_FORMAT_MINUTES_UNTIL_PUSHBACK, FILE_NAME_PREDICTION, FILE_NAME_DEPARTURE, NUMBER_OF_PROCESSORS
 from src.clean.Extractor import Extractor
 from src.clean.TimestampSorter import sort_csv_files
 from src.hyper_parameters import XGBOOST_PARAMETERS, XGBOOST_ESTIMATORS
 from src.path_generator_utility import path_generator, labels_path_generator, model_path_generator, \
-    open_arena_submission_format_path_generator, departure_model_path_generator, results_path_generator
+    open_arena_submission_format_path_generator, departure_model_path_generator
 from src.prediction.UnseenDataRunner import UnseenDataRunner
 from src.prediction.implementors.FeatureLoader import FeatureLoader
 from src.prediction.implementors.FeatureLoader2 import FeatureLoader2
@@ -45,25 +43,25 @@ def add_departure(airport_name, data, departure_column_name):
 
 
 def data_loader_departure(airport_name):
-    print("Loading data for airport: %s", airport_name)
-    labeled_data = pd.read_csv(labels_path_generator(airport_name), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
-        .sort_values(COLUMN_NAME_TIMESTAMP)
-    data = UnseenDataRunner(labeled_data, FeatureLoader()).run([airport_name])
+    print("Loading departure data for airport: %s", airport_name)
+    data = UnseenDataRunner(labels_path_generator(airport_name), airport_name, FeatureLoader()).run()
     data.to_csv(path_generator(airport_name, FILE_NAME_RESULTS), index=False)
 
 
 def data_loader_pushback(airport_name):
-    print("Loading data for airport: %s", airport_name)
+    print("Loading pushback data for airport: %s", airport_name)
     data = pd.read_csv(labels_path_generator(airport_name), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
         .sort_values(COLUMN_NAME_TIMESTAMP)
 
     departure = add_departure(airport_name, data, 'last_etd')
 
-    data = UnseenDataRunner(departure, FeatureLoader2()).run([airport_name])
+    departure.to_csv(path_generator(airport_name, FILE_NAME_DEPARTURE), index=False)
+
+    data = UnseenDataRunner(path_generator(airport_name, FILE_NAME_DEPARTURE), airport_name, FeatureLoader2()).run()
     data.to_csv(path_generator(airport_name, FILE_NAME_RESULTS_2), index=False)
 
 
-def train(airport_name):
+def train_departure(airport_name):
     departure_data = pd.read_csv(path_generator(airport_name, FILE_NAME_RESULTS), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
         .sort_values(COLUMN_NAME_TIMESTAMP)
 
@@ -77,6 +75,7 @@ def train(airport_name):
     model.fit(departure_features, departure_labels)
     model.save_model(departure_model_path_generator(airport_name))
 
+def train_pushback(airport_name):
     pushback_data = pd.read_csv(path_generator(airport_name, FILE_NAME_RESULTS_2), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
         .sort_values(COLUMN_NAME_TIMESTAMP)
 
@@ -92,17 +91,16 @@ def train(airport_name):
 
 
 def open_arena(airport_name):
-    unlabeled_data = pd.read_csv(open_arena_submission_format_path_generator(), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
-        .sort_values(COLUMN_NAME_TIMESTAMP)
-    predictions = UnseenDataRunner(unlabeled_data, Predictor()).run([airport_name])
+    predictions = UnseenDataRunner(open_arena_submission_format_path_generator(), airport_name, Predictor()).run()
     predictions.to_csv(path_generator(airport_name, FILE_NAME_PREDICTION), index=False)
 
 
 def pipeline(airport_name):
     # data_loader_departure(airport_name)
-    data_loader_pushback(airport_name)
-    train(airport_name)
-    open_arena(airport_name)
+    train_departure(airport_name)
+    # data_loader_pushback(airport_name)
+    # train_pushback(airport_name)
+    # open_arena(airport_name)
 
 
 def build_submission_format():
