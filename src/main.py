@@ -1,8 +1,6 @@
 import sys
 import multiprocessing as mp
 import time
-
-import cudf
 import pandas as pd
 import xgboost as xgb
 from sklearn.metrics import mean_absolute_error
@@ -100,6 +98,13 @@ def open_arena(airport_name):
     predictions.to_csv(path_generator(airport_name, FILE_NAME_PREDICTION), index=False)
 
 
+def pipeline(airport_name):
+    # data_loader_departure(airport_name)
+    data_loader_pushback(airport_name)
+    train(airport_name)
+    open_arena(airport_name)
+
+
 def build_submission_format():
     predictions = []
     for airport_name in AIRPORTS:
@@ -129,73 +134,6 @@ def build_submission_format():
     all_predictions.to_csv(f"{TRAIN_PATH}submission_format_results.csv", index=False)
 
 
-def add_departure_time():
-    for airport_name in AIRPORTS:
-        print("Loading data for airport: %s", airport_name)
-        start_time = time.time()
-
-        results = cudf.read_csv(
-            path_generator(airport_name, FILE_NAME_RESULTS),
-            parse_dates=[COLUMN_NAME_TIMESTAMP]
-        )
-        etd = cudf.read_csv(
-            path_generator(airport_name, FILE_NAME_ETD),
-            parse_dates=[
-                COLUMN_NAME_TIMESTAMP,
-                ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME
-            ]
-        )
-        etd = etd.groupby(FLIGHT_ID).last()
-        etd = etd.reset_index()
-        etd = etd[[FLIGHT_ID, ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME]]
-        departure = results.merge(
-            etd,
-            how="left",
-            on=FLIGHT_ID
-        )
-        labels = (departure[ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME] - departure[
-            COLUMN_NAME_TIMESTAMP]).dt.seconds / 60
-        departure.drop(ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME, axis=1, inplace=True)
-
-        labels = labels.to_pandas()
-        departure = departure.to_pandas()
-        labels = results.iloc[:, 3]
-        features = results.iloc[:, 4:]
-
-        params = {
-            'objective': 'reg:squaredlogerror',
-            'lambda': 0.8,
-            'tree_method': 'hist',
-            'max_bin': 24,
-            'max_depth': 10,
-            'eval_metric': 'mae'
-        }
-
-        model = xgb.XGBRegressor(n_estimators=100, **params)
-        print("Training model for airport: %s", airport_name)
-        model.fit(features, labels)
-        model.save_model(departure_model_path_generator(airport_name))
-
-        features['actual_departure'] = labels
-        params = {
-            'objective': 'reg:squaredlogerror',
-            'lambda': 0.8,
-            'tree_method': 'hist',
-            'max_bin': 24,
-            'max_depth': 10,
-            'eval_metric': 'mae'
-        }
-
-        model = xgb.XGBRegressor(n_estimators=100, **params)
-        print("Training model for airport: %s", airport_name)
-        model.fit(features, labels)
-        model.save_model(model_path_generator(airport_name))
-
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"train{airport_name}: {elapsed_time:.2f} seconds")
-
-
 if __name__ == '__main__':
     start_time = time.time()
     if not IS_DATA_CLEANED:
@@ -212,12 +150,11 @@ if __name__ == '__main__':
 
     start_time = time.time()
     pool = mp.Pool(processes=NUMBER_OF_PROCESSORS)
-    pool.starmap(data_loader_pushback, [(ts,) for ts in AIRPORTS])
+    pool.starmap(pipeline, [(ts,) for ts in AIRPORTS])
     pool.close()
     pool.join()
 
-    # open_arena()
-    # add_departure_time()
+    build_submission_format()
 
     end_time = time.time()
     elapsed_time = end_time - start_time
