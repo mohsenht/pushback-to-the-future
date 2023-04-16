@@ -1,5 +1,8 @@
 import multiprocessing as mp
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 import os
+import sys
 import time
 from datetime import timedelta
 from pathlib import Path
@@ -32,23 +35,37 @@ class UnseenDataRunner:
                 ]
             timestamps = pd.to_datetime(airport_submission_format.timestamp.unique()).sort_values(COLUMN_NAME_TIMESTAMP)
             timestamps = timestamps[0]
-            pool = mp.Pool(processes=NUMBER_OF_PROCESSORS)
 
             start_index = 0
-            while start_index < len(timestamps):
+            timestamps_length = len(timestamps)
+
+            while start_index < timestamps_length:
                 end_index = start_index + TIMESTAMP_CHUNK
                 current_chunk = timestamps[start_index:end_index]
                 current_chunk_len = len(current_chunk)
+
+                sys.stdout.write('\r')
+                # the exact output you're looking for:
+                sys.stdout.write(f"{airport}: end_index: {end_index} - timestamps_length: {timestamps_length}")
+
                 if current_chunk_len > 0:
-                    raw_data = LoadRawData(in_bound_data, current_chunk[0] - timedelta(hours=30), current_chunk[-1])
+                    start_time = time.time()
+                    start_current = current_chunk[0]
+                    end_current = current_chunk[-1]
+                    raw_data = LoadRawData(in_bound_data, start_current - timedelta(hours=30), end_current)
+                    for ts in current_chunk:
+                        results.append(
+                            self.predict_interface.predict(
+                                ts,
+                                raw_data.get_data(),
+                                raw_data,
+                                airport,
+                                model
+                            )
+                        )
+                    start_index = end_index
 
-                    results.append(pd.concat(pool.starmap(self.predict_interface.predict,
-                                                          [(ts, airport_submission_format, raw_data, airport, model) for
-                                                           ts in timestamps]), axis=0, ignore_index=True))
-                start_index = end_index
-
-            pool.close()
-            pool.join()
+                sys.stdout.flush()
 
             in_bound_data.closeAll()
 

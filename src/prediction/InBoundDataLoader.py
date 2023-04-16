@@ -7,17 +7,25 @@ from src.constants import FILE_NAME_ETD, FILE_NAME_RUNWAYS, FILE_NAME_STANDTIMES
     RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME, ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME, ETD_COLUMN_TIMESTAMP, \
     RUNWAYS_COLUMN_TIMESTAMP, STANDTIMES_COLUMN_TIMESTAMP, LAMP_COLUMN_TIMESTAMP, CONFIG_COLUMN_TIMESTAMP, \
     FILE_NAME_TFM, FILE_NAME_TBFM, FILE_NAME_FIRST_POSITION, TBFM_COLUMN_SCHEDULED_RUNWAY_ESTIMATED_TIME, \
-    COLUMN_NAME_TIMESTAMP, TFM_COLUMN_ARRIVAL_RUNWAY_ESTIMATED_TIME, TFM_COLUMN_TIMESTAMP
-from src.path_generator_utility import path_generator
+    COLUMN_NAME_TIMESTAMP, TFM_COLUMN_ARRIVAL_RUNWAY_ESTIMATED_TIME, TFM_COLUMN_TIMESTAMP, FILE_NAME_LABELS
+from src.path_generator_utility import path_generator, labels_path_generator
 from src.prediction.CSVReader import CSVReader
 from src.prediction.constant_chunk_size import ETD_CHUNK, TBFM_CHUNK, TFM_CHUNK, STANDTIMES_CHUNK, RUNWAYS_CHUNK, \
-    LAMP_CHUNK, CONFIG_CHUNK
+    LAMP_CHUNK, CONFIG_CHUNK, LABELS_CHUNK
 
 
 class InBoundDataLoader:
 
     def __init__(self, airport):
         self.airport = airport
+
+        self.data = self.config_reader = CSVReader(
+            labels_path_generator(airport),
+            LABELS_CHUNK,
+            [
+                CONFIG_COLUMN_TIMESTAMP
+            ]
+        )
 
         self.config_reader = CSVReader(
             path_generator(airport, FILE_NAME_CONFIG),
@@ -86,6 +94,8 @@ class InBoundDataLoader:
         )
 
     def get_data(self, start_time, end_time, data_name):
+        if data_name == FILE_NAME_LABELS:
+            return self.data.get_data(start_time, end_time)
         if data_name == FILE_NAME_CONFIG:
             return self.config_reader.get_data(start_time, end_time)
         if data_name == FILE_NAME_ETD:

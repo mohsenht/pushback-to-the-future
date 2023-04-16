@@ -9,6 +9,10 @@ def labels_path_generator(airport):
     return f"{TRAIN_PATH}{airport}{SEPARATOR}{FILE_NAME_LABELS}{airport}.csv"
 
 
+def results_path_generator(airport):
+    return f"{TRAIN_PATH}{airport}{SEPARATOR}{airport}_results.csv"
+
+
 def open_arena_submission_format_path_generator():
     return f"{TRAIN_PATH}submission_format.csv"
 
@@ -18,4 +22,8 @@ def types_path_generator(airport):
 
 
 def model_path_generator(airport):
-    return f"{MODEL_PATH}{airport}{SEPARATOR}xgboost-huber.model"
+    return f"{MODEL_PATH}{airport}{SEPARATOR}xgboost-main.model"
+
+
+def departure_model_path_generator(airport):
+    return f"{MODEL_PATH}{airport}{SEPARATOR}xgboost-departure.model"

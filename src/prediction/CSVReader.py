@@ -20,6 +20,8 @@ class CSVReader:
         )
 
     def get_data(self, start_time: pd.Timestamp, end_time: pd.Timestamp) -> pd.DataFrame:
+        if not self.data.empty and self.data.iloc[-1][COLUMN_NAME_TIMESTAMP] > end_time:
+            return self.delete_redundant_first_rows(start_time, len(self.data))
         for chunk in self.filereader:
             if chunk.empty:
                 return self.delete_redundant_first_rows(start_time, len(self.data))
@@ -31,7 +33,7 @@ class CSVReader:
         return self.delete_redundant_first_rows(start_time, len(self.data))
 
     def delete_redundant_first_rows(self, start_time, length):
-        if length < 2:
+        if length < (self.chunk_size / 3):
             return self.data
         length = int(length / 2)
         if self.data.iloc[length][COLUMN_NAME_TIMESTAMP] >= start_time:
@@ -44,5 +46,3 @@ class CSVReader:
         self.filereader.close()
         self.file.close()
         del self.data
-
-

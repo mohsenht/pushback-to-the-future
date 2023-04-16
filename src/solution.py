@@ -14,7 +14,8 @@ from src.constants import AIRPORTS, SEPARATOR, SUBMISSION_FORMAT_MINUTES_UNTIL_P
     ETD_COLUMN_TIMESTAMP, LAMP_COLUMN_TIMESTAMP, STANDTIMES_COLUMN_TIMESTAMP, CONFIG_COLUMN_TIMESTAMP, \
     ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME, RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME, \
     LAMP_COLUMN_FORECAST_TIMESTAMP, STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME
-from src.path_generator_utility import model_path_generator, types_path_generator
+from src.path_generator_utility import model_path_generator, types_path_generator, departure_model_path_generator
+
 
 def load_model(solution_directory: Path) -> Any:
     airport_dict = {}
@@ -22,8 +23,10 @@ def load_model(solution_directory: Path) -> Any:
     for airport in AIRPORTS:
         xgboost_model = xgb.XGBRegressor()
         xgboost_model.load_model(f"{solution_directory}{SEPARATOR}{model_path_generator(airport)}")
+        xgboost_model_departure = xgb.XGBRegressor()
+        xgboost_model_departure.load_model(f"{solution_directory}{SEPARATOR}{departure_model_path_generator(airport)}")
         type_container = TypeContainer.from_file(f"{solution_directory}{SEPARATOR}{types_path_generator(airport)}")
-        airport_dict[airport] = AirportModel(xgboost_model, type_container)
+        airport_dict[airport] = AirportModel(xgboost_model, xgboost_model_departure, type_container)
 
     return Model(airport_dict, FeatureExtractorContainer().data_gatherer)
 
@@ -63,8 +66,10 @@ def predict(
         model.airport_dict[airport].type_container
     )
     features = data.iloc[:, 4:]
-    y_pred = model.airport_dict[airport].model.predict(features)
+    data['actual_departure'] = model.airport_dict[airport].model_departure.predict(features)
 
+    features = data.iloc[:, 4:]
+    y_pred = model.airport_dict[airport].model.predict(features)
     prediction[SUBMISSION_FORMAT_MINUTES_UNTIL_PUSHBACK] = np.maximum(y_pred.round(), 0).astype(int)
     return prediction
 

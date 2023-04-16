@@ -20,7 +20,7 @@ class FeatureLoader(PredictInterface):
 
         for airport in AIRPORTS:
             type_container = TypeContainer.from_file(f"{solution_directory}{SEPARATOR}{types_path_generator(airport)}")
-            airport_dict[airport] = AirportModel(model=None, type_container=type_container)
+            airport_dict[airport] = AirportModel(model=None, model_departure=None, type_container=type_container)
 
         return Model(airport_dict, FeatureExtractorContainer().data_gatherer)
 
