@@ -22,7 +22,7 @@ def types_path_generator(airport):
 
 
 def model_path_generator(airport):
-    return f"{MODEL_PATH}{airport}{SEPARATOR}xgboost-main.model"
+    return f"{MODEL_PATH}{airport}{SEPARATOR}xgboost-pushback.model"
 
 
 def departure_model_path_generator(airport):

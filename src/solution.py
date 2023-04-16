@@ -5,15 +5,17 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 
-from src.model.AirportModel import AirportModel
-from src.loader.FeatureExtractorContainer import FeatureExtractorContainer
-from src.model.Input import Input
-from src.model.Model import Model
 from src.clean.TypeContainer import TypeContainer
 from src.constants import AIRPORTS, SEPARATOR, SUBMISSION_FORMAT_MINUTES_UNTIL_PUSHBACK, RUNWAYS_COLUMN_TIMESTAMP, \
     ETD_COLUMN_TIMESTAMP, LAMP_COLUMN_TIMESTAMP, STANDTIMES_COLUMN_TIMESTAMP, CONFIG_COLUMN_TIMESTAMP, \
     ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME, RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME, \
-    LAMP_COLUMN_FORECAST_TIMESTAMP, STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME
+    LAMP_COLUMN_FORECAST_TIMESTAMP, STANDTIMES_COLUMN_ARRIVAL_STAND_ACTUAL_TIME, COLUMN_NAME_TIMESTAMP, \
+    TBFM_COLUMN_SCHEDULED_RUNWAY_ESTIMATED_TIME, TFM_COLUMN_ARRIVAL_RUNWAY_ESTIMATED_TIME
+from src.loader.FeatureExtractorContainer import FeatureExtractorContainer
+from src.loader.FeatureExtractorContainer2 import FeatureExtractorContainer2
+from src.model.AirportModel import AirportModel
+from src.model.Input import Input
+from src.model.Model import Model
 from src.path_generator_utility import model_path_generator, types_path_generator, departure_model_path_generator
 
 
@@ -28,7 +30,7 @@ def load_model(solution_directory: Path) -> Any:
         type_container = TypeContainer.from_file(f"{solution_directory}{SEPARATOR}{types_path_generator(airport)}")
         airport_dict[airport] = AirportModel(xgboost_model, xgboost_model_departure, type_container)
 
-    return Model(airport_dict, FeatureExtractorContainer().data_gatherer)
+    return Model(airport_dict, FeatureExtractorContainer().data_gatherer, FeatureExtractorContainer2().data_gatherer)
 
 
 def predict(
@@ -66,8 +68,15 @@ def predict(
         model.airport_dict[airport].type_container
     )
     features = data.iloc[:, 4:]
-    data['actual_departure'] = model.airport_dict[airport].model_departure.predict(features)
+    data['last_etd'] = model.airport_dict[airport].model_departure.predict(features)
 
+    data = data.iloc[:, 0:4]
+    data = model.data_gatherer_2.load_features(
+        prediction_time,
+        data,
+        input_data,
+        model.airport_dict[airport].type_container
+    )
     features = data.iloc[:, 4:]
     y_pred = model.airport_dict[airport].model.predict(features)
     prediction[SUBMISSION_FORMAT_MINUTES_UNTIL_PUSHBACK] = np.maximum(y_pred.round(), 0).astype(int)
@@ -90,10 +99,19 @@ def prepareData(
     standtimes = standtimes.copy()
     lamp = lamp.copy()
     config = config.copy()
+    tbfm = tbfm.copy()
+    tfm = tfm.copy()
 
     etd[ETD_COLUMN_TIMESTAMP] = pd.to_datetime(etd[ETD_COLUMN_TIMESTAMP])
     etd[ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME] = pd.to_datetime(
         etd[ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME])
+
+    tbfm[TBFM_COLUMN_SCHEDULED_RUNWAY_ESTIMATED_TIME] = pd.to_datetime(
+        tbfm[TBFM_COLUMN_SCHEDULED_RUNWAY_ESTIMATED_TIME])
+    tbfm[COLUMN_NAME_TIMESTAMP] = pd.to_datetime(tbfm[COLUMN_NAME_TIMESTAMP])
+
+    tfm[TFM_COLUMN_ARRIVAL_RUNWAY_ESTIMATED_TIME] = pd.to_datetime(tfm[TFM_COLUMN_ARRIVAL_RUNWAY_ESTIMATED_TIME])
+    tfm[COLUMN_NAME_TIMESTAMP] = pd.to_datetime(tfm[COLUMN_NAME_TIMESTAMP])
 
     runways[RUNWAYS_COLUMN_TIMESTAMP] = pd.to_datetime(runways[RUNWAYS_COLUMN_TIMESTAMP])
     runways[RUNWAYS_COLUMN_ARRIVAL_RUNWAY_ACTUAL_TIME] = pd.to_datetime(

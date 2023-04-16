@@ -35,6 +35,8 @@ FILE_NAME_STANDTIMES = "standtimes"
 FILE_NAME_TBFM = "tbfm"
 FILE_NAME_TFM = "tfm"
 FILE_NAME_RESULTS = "results"
+FILE_NAME_RESULTS_2 = "results2"
+FILE_NAME_PREDICTION = "prediction"
 FILE_NAME_LABELS = "train_labels_"
 
 COLUMN_NAME_TIMESTAMP = 'timestamp'

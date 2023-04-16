@@ -14,7 +14,7 @@ from src.constants import AIRPORTS, SEPARATOR
 from src.path_generator_utility import types_path_generator
 
 
-class FeatureLoader(PredictInterface):
+class FeatureLoader2(PredictInterface):
 
     def load_model(self, solution_directory: Path) -> Any:
         airport_dict = {}
@@ -32,7 +32,7 @@ class FeatureLoader(PredictInterface):
                 airport: str,
                 model: Model) -> pd.DataFrame:
         input_data = raw_data.get_input(now)
-        return model.data_gatherer.load_features(
+        return model.data_gatherer_2.load_features(
             now,
             data,
             input_data,
