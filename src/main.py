@@ -1,4 +1,5 @@
 import multiprocessing as mp
+import os
 import time
 
 import pandas as pd
@@ -8,16 +9,18 @@ from constants import FILE_NAME_RESULTS, AIRPORTS, TRAIN_PATH, COLUMN_NAME_TIMES
     SUBMISSION_FORMAT_FLIGHT_ID, IS_DATA_CLEANED, FLIGHT_ID, \
     FILE_NAME_ETD, ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME, FILE_NAME_RESULTS_2, \
     SUBMISSION_FORMAT_MINUTES_UNTIL_PUSHBACK, FILE_NAME_PREDICTION, FILE_NAME_DEPARTURE, NUMBER_OF_PROCESSORS, \
-    FILE_NAME_AIRPORT_SUBMISSION
+    FILE_NAME_AIRPORT_SUBMISSION, FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE, SEPARATOR
 from src.clean.Extractor import Extractor
 from src.clean.TimestampSorter import sort_csv_files
+from src.clean.TypeContainer import TypeContainer
 from src.hyper_parameters import XGBOOST_PARAMETERS, XGBOOST_ESTIMATORS
 from src.path_generator_utility import path_generator, labels_path_generator, model_path_generator, \
-    open_arena_submission_format_path_generator, departure_model_path_generator
+    open_arena_submission_format_path_generator, departure_model_path_generator, types_path_generator
 from src.prediction.UnseenDataRunner import UnseenDataRunner
 from src.prediction.implementors.FeatureLoader import FeatureLoader
 from src.prediction.implementors.FeatureLoader2 import FeatureLoader2
 from src.prediction.implementors.Predictor import Predictor
+from pathlib import Path
 
 
 def add_departure(airport_name, data, departure_column_name):
@@ -76,6 +79,7 @@ def train_departure(airport_name):
     model.fit(departure_features, departure_labels)
     model.save_model(departure_model_path_generator(airport_name))
 
+
 def train_pushback(airport_name):
     pushback_data = pd.read_csv(path_generator(airport_name, FILE_NAME_RESULTS_2), parse_dates=[COLUMN_NAME_TIMESTAMP]) \
         .sort_values(COLUMN_NAME_TIMESTAMP)
@@ -104,11 +108,12 @@ def open_arena(airport_name):
 
 
 def pipeline(airport_name):
+    pass
     # data_loader_departure(airport_name)
     # train_departure(airport_name)
-    data_loader_pushback(airport_name)
-    train_pushback(airport_name)
-    open_arena(airport_name)
+    # data_loader_pushback(airport_name)
+    # train_pushback(airport_name)
+    # open_arena(airport_name)
 
 
 def build_submission_format():
@@ -140,28 +145,70 @@ def build_submission_format():
     all_predictions.to_csv(f"{TRAIN_PATH}submission_format_results.csv", index=False)
 
 
+def mergeData(airport_name):
+    first_features = [
+        FLIGHT_ID,
+        COLUMN_NAME_TIMESTAMP,
+        SUBMISSION_FORMAT_AIRPORT,
+        'w_etd',
+        'diff_two_etd',
+        FEATURE_COLUMN_WEIGHTED_MEAN_ARRIVAL_TO_GATE,
+    ]
+
+    type_container = TypeContainer.from_file(f"{Path(os.getcwd())}{SEPARATOR}{types_path_generator(airport)}")
+
+    boolean_feature_names_runways = []
+    boolean_feature_names_runways.extend(['de_' + s for s in type_container.runways_names])
+    boolean_feature_names_runways.extend(['ar_' + s for s in type_container.runways_names])
+
+    boolean_feature_names_info = []
+    boolean_feature_names_info.extend(['a_' + s for s in type_container.aircraft_type])
+    boolean_feature_names_info.extend(['e_' + s for s in type_container.aircraft_engine_class])
+    boolean_feature_names_info.extend(['f_' + s for s in type_container.flight_type])
+    boolean_feature_names_info.extend(['m_' + s for s in type_container.major_carrier])
+
+    first_features.extend(boolean_feature_names_runways)
+    first_features.extend(boolean_feature_names_info)
+
+    result_1 = pd.read_csv(path_generator(airport_name, FILE_NAME_RESULTS))
+    result_2 = pd.read_csv(path_generator(airport_name, FILE_NAME_RESULTS_2))
+
+    result_1 = result_1[first_features]
+
+    result_2 = result_2.merge(
+        result_1,
+        how="left",
+        on=[FLIGHT_ID, COLUMN_NAME_TIMESTAMP, SUBMISSION_FORMAT_AIRPORT]
+    )
+
+    result_2.to_csv(path_generator(airport_name, FILE_NAME_RESULTS_2))
+
+
 if __name__ == '__main__':
-    start_time = time.time()
-    if not IS_DATA_CLEANED:
-        print("data cleaning is running:")
-        for airport in AIRPORTS:
-            Extractor(f"{TRAIN_PATH}", airport).extract()
+    for airport in AIRPORTS:
+        mergeData(airport)
 
-        pool = mp.Pool(processes=5)
-        pool.starmap(sort_csv_files,
-                     [(airport,) for
-                      airport in AIRPORTS])
-        pool.close()
-        pool.join()
-
-    start_time = time.time()
-    pool = mp.Pool(processes=NUMBER_OF_PROCESSORS)
-    pool.starmap(pipeline, [(ts,) for ts in AIRPORTS])
-    pool.close()
-    pool.join()
-
-    build_submission_format()
-
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print(f"Elapsed time: {elapsed_time:.2f} seconds")
+    # start_time = time.time()
+    # if not IS_DATA_CLEANED:
+    #     print("data cleaning is running:")
+    #     for airport in AIRPORTS:
+    #         Extractor(f"{TRAIN_PATH}", airport).extract()
+    #
+    #     pool = mp.Pool(processes=5)
+    #     pool.starmap(sort_csv_files,
+    #                  [(airport,) for
+    #                   airport in AIRPORTS])
+    #     pool.close()
+    #     pool.join()
+    #
+    # start_time = time.time()
+    # pool = mp.Pool(processes=NUMBER_OF_PROCESSORS)
+    # pool.starmap(pipeline, [(ts,) for ts in AIRPORTS])
+    # pool.close()
+    # pool.join()
+    #
+    # build_submission_format()
+    #
+    # end_time = time.time()
+    # elapsed_time = end_time - start_time
+    # print(f"Elapsed time: {elapsed_time:.2f} seconds")
