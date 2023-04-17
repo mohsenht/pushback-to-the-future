@@ -36,6 +36,7 @@ FILE_NAME_RESULTS = "results"
 FILE_NAME_RESULTS_2 = "results2"
 FILE_NAME_DEPARTURE = "departure"
 FILE_NAME_PREDICTION = "prediction"
+FILE_NAME_AIRPORT_SUBMISSION = "submisstion_format"
 FILE_NAME_LABELS = "train_labels_"
 
 COLUMN_NAME_TIMESTAMP = 'timestamp'

@@ -7,7 +7,8 @@ import xgboost as xgb
 from constants import FILE_NAME_RESULTS, AIRPORTS, TRAIN_PATH, COLUMN_NAME_TIMESTAMP, SUBMISSION_FORMAT_AIRPORT, \
     SUBMISSION_FORMAT_FLIGHT_ID, IS_DATA_CLEANED, FLIGHT_ID, \
     FILE_NAME_ETD, ETD_COLUMN_DEPARTURE_RUNWAY_ESTIMATED_TIME, FILE_NAME_RESULTS_2, \
-    SUBMISSION_FORMAT_MINUTES_UNTIL_PUSHBACK, FILE_NAME_PREDICTION, FILE_NAME_DEPARTURE, NUMBER_OF_PROCESSORS
+    SUBMISSION_FORMAT_MINUTES_UNTIL_PUSHBACK, FILE_NAME_PREDICTION, FILE_NAME_DEPARTURE, NUMBER_OF_PROCESSORS, \
+    FILE_NAME_AIRPORT_SUBMISSION
 from src.clean.Extractor import Extractor
 from src.clean.TimestampSorter import sort_csv_files
 from src.hyper_parameters import XGBOOST_PARAMETERS, XGBOOST_ESTIMATORS
@@ -91,7 +92,14 @@ def train_pushback(airport_name):
 
 
 def open_arena(airport_name):
-    predictions = UnseenDataRunner(open_arena_submission_format_path_generator(), airport_name, Predictor()).run()
+    airport_submission_format = pd.read_csv(
+        open_arena_submission_format_path_generator(),
+        parse_dates=[COLUMN_NAME_TIMESTAMP]).sort_values(COLUMN_NAME_TIMESTAMP)
+    airport_submission_format = airport_submission_format.loc[
+        airport_submission_format.airport == airport_name
+        ]
+    airport_submission_format.to_csv(path_generator(airport_name, FILE_NAME_AIRPORT_SUBMISSION), index=False)
+    predictions = UnseenDataRunner(path_generator(airport_name, FILE_NAME_AIRPORT_SUBMISSION), airport_name, Predictor()).run()
     predictions.to_csv(path_generator(airport_name, FILE_NAME_PREDICTION), index=False)
 
 
