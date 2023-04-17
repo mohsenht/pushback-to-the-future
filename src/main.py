@@ -97,10 +97,10 @@ def open_arena(airport_name):
 
 def pipeline(airport_name):
     # data_loader_departure(airport_name)
-    train_departure(airport_name)
-    # data_loader_pushback(airport_name)
-    # train_pushback(airport_name)
-    # open_arena(airport_name)
+    # train_departure(airport_name)
+    data_loader_pushback(airport_name)
+    train_pushback(airport_name)
+    open_arena(airport_name)
 
 
 def build_submission_format():
